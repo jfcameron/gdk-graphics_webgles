@@ -37,6 +37,8 @@ else()
     endforeach()
 endif()
 
+add_subdirectory(profile)
+
 add_library(gdkgraphics_webgles STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/common/src/glh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/webgl1es2/src/webgl1es2_camera.cpp
@@ -56,7 +58,6 @@ set_target_properties(gdkgraphics_webgles PROPERTIES EXPORT_NAME graphics_webgle
 
 set_target_properties(gdkgraphics_webgles PROPERTIES PREFIX "lib")
 
-# **its own build info**, named for the repo whatever directory it is checked out into
 jfc_generate_build_info(INCLUDE_PATH "gdk/graphics_webgles")
 
 target_include_directories(gdkgraphics_webgles
@@ -72,7 +73,8 @@ target_include_directories(gdkgraphics_webgles
 target_compile_features(gdkgraphics_webgles PUBLIC cxx_std_20)
 
 target_link_libraries(gdkgraphics_webgles PUBLIC
-    gdkgraphics)
+    gdkgraphics
+    gdkgraphics_webgles_profile)
 
 if (EMSCRIPTEN)
     target_link_options(gdkgraphics_webgles PUBLIC "-lembind")

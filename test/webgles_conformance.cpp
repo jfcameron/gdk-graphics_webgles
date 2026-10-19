@@ -1,13 +1,10 @@
 // © Joseph Cameron - All Rights Reserved
 
-/// \file
-/// \brief **the conformance suite over OpenGL ES 2**: what the interface promises, held of gdkgraphics_webgles on a
-/// window's GL context, as of the null context and any other. \see gdk-graphics' test/conformance/conformance.h
-
 #include "conformance.h"
 #include "test_include.h"
 
 #include <gdk/graphics/webgl1es2_context.h>
+#include <gdk/graphics/webgl1es2_profile.h>
 
 #include <utility>
 
@@ -19,4 +16,6 @@ namespace gdk::graphics::conformance {
     }
 
     std::string_view implementation() { return "webgles"; }
+
+    profile minimum_profile() { return webgl1_minimum(); }
 }

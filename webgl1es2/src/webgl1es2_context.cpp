@@ -1,10 +1,10 @@
 // © Joseph Cameron - All Rights Reserved
 
 #include <gdk/graphics/exception.h>
-#include <gdk/graphics/ext/gles.h>
 #include <gdk/graphics/model_data.h>
 #include <gdk/graphics/texture_data.h>
 #include <gdk/graphics/webgl1es2_context.h>
+#include <gdk/graphics/webgl1es2_profile.h>
 
 #include <gdk/graphics/opengl.h>
 #include <gdk/graphics/webgl1es2_entity.h>
@@ -125,7 +125,7 @@ material_ptr_type webgl1es2_context::make_material(const const_material_ptr_type
 shader_ptr_type webgl1es2_context::make_shader(
     const std::string_view aVertexShaderStageSourceCodeGLSL, 
     const std::string_view aFragmentShaderStageSourceCodeGLSL) {
-    if (m_pProfile) ext::check_shader(*m_pProfile, aVertexShaderStageSourceCodeGLSL, aFragmentShaderStageSourceCodeGLSL);
+    if (m_pProfile) check_es2_shader(*m_pProfile, aVertexShaderStageSourceCodeGLSL, aFragmentShaderStageSourceCodeGLSL);
 
     return shader_ptr_type(
         new webgl1es2_shader_program(std::string(aVertexShaderStageSourceCodeGLSL), std::string(aFragmentShaderStageSourceCodeGLSL)));
