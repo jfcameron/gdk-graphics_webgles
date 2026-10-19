@@ -74,6 +74,7 @@ target_compile_features(gdkgraphics_webgles PUBLIC cxx_std_20)
 
 target_link_libraries(gdkgraphics_webgles PUBLIC
     gdkgraphics
+    jfc-smart_handles
     gdkgraphics_webgles_profile)
 
 if (EMSCRIPTEN)
