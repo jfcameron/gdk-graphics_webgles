@@ -10,3 +10,6 @@
 [submodule "extern/gdk-time"]
 	path = extern/gdk-time
 	url = https://github.com/jfcameron/gdk-time.git
+[submodule "extern/jfc-smart_handles"]
+	path = extern/jfc-smart_handles
+	url = https://github.com/jfcameron/jfc-smart_handles.git
