@@ -36,6 +36,10 @@ jobs:
             runner: windows-latest
             tests: false # no gl on github's windows runners
 
+          - preset: windows-msvc-x86
+            runner: windows-latest
+            tests: false # no gl on github's windows runners
+
           - preset: linux-clang-asan
             runner: ubuntu-latest
             tests: true

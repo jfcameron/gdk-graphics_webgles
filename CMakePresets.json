@@ -132,6 +132,20 @@
       }
     },
     {
+      "name": "windows-msvc-x86",
+      "displayName": "Windows / MSVC / x86",
+      "inherits": "windows-msvc",
+      "architecture": "Win32",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "/W4 /EHsc /permissive-"
+      }
+    },
+    {
       "name": "windows-msvc-cross",
       "displayName": "Windows / MSVC / cross from unix (msvc-wine)",
       "description": "Cross-compiles the windows leg from a unix host through msvc-wine. Not gated on hostSystemName: the host is deliberately not Windows. Set MSVC_WINE_ROOT if msvc-wine is not in /opt/msvc.",
@@ -265,6 +279,16 @@
       "configuration": "Release"
     },
     {
+      "name": "windows-msvc-x86",
+      "configurePreset": "windows-msvc-x86",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "configuration": "Release"
+    },
+    {
       "name": "emscripten",
       "configurePreset": "emscripten"
     },
@@ -357,6 +381,19 @@
     {
       "name": "windows-msvc",
       "configurePreset": "windows-msvc",
+      "output": {
+        "outputOnFailure": true
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "configuration": "Release"
+    },
+    {
+      "name": "windows-msvc-x86",
+      "configurePreset": "windows-msvc-x86",
       "output": {
         "outputOnFailure": true
       },
