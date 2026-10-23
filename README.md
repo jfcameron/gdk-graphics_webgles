@@ -1,9 +1,7 @@
 ## gdk-graphics_webgles
-
 An implementation of [gdk-graphics](https://github.com/jfcameron/gdk-graphics) using OpenGL Embedded Systems 2.0 and WebGL 1.0.
 
 ### Quickstart
-
 Install cmake 3.21 or greater, and a c++20 compatible compiler 
 ```
 # initialize the tree
