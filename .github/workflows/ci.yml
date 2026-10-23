@@ -30,7 +30,7 @@ jobs:
 
           - preset: macos-clang
             runner: macos-latest
-            tests: true
+            tests: false # no gl on github's macos runners
 
           - preset: windows-msvc
             runner: windows-latest
