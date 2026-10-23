@@ -34,7 +34,7 @@ jobs:
 
           - preset: windows-msvc
             runner: windows-latest
-            tests: true
+            tests: false # no gl on github's windows runners
 
           - preset: linux-clang-asan
             runner: ubuntu-latest
