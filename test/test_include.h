@@ -10,6 +10,8 @@
 #if defined JFC_TARGET_PLATFORM_Linux || defined JFC_TARGET_PLATFORM_Windows
 #define GLEW_STATIC
 #include <GL/glew.h>
+#elif defined JFC_TARGET_PLATFORM_Darwin
+#include <OpenGL/gl3.h>
 #endif
 
 #include <GLFW/glfw3.h>
@@ -45,8 +47,6 @@ inline void initGL()
     }
 }
 
-/// \brief **how wide a 2D texture's mip level is**, as GL says -- or nothing where it cannot be asked: WebGL has no
-/// glGetTexLevelParameteriv, so a browser's run claims nothing of mip levels rather than an answer made up for it
 [[nodiscard]] inline std::optional<GLint> texture_level_width(const GLuint aHandle, const GLint aLevel)
 {
 #ifdef JFC_TARGET_PLATFORM_Emscripten
@@ -65,7 +65,6 @@ inline void initGL()
 #endif
 }
 
-//! **these tests' own helpers**, not a library's
 namespace webgles_test
 {
     inline bool glGetError(const bool aExpected = false)
