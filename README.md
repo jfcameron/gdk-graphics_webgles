@@ -1,6 +1,6 @@
 ## gdk-graphics_webgles
 
-An implementation of [gdk-graphics](https://github.com/jfcameron/gdk-graphics) for OpenGL Embedded Systems 2.0 and WebGL 1.0.
+An implementation of [gdk-graphics](https://github.com/jfcameron/gdk-graphics) using OpenGL Embedded Systems 2.0 and WebGL 1.0.
 
 ### Quickstart
 
