@@ -4,7 +4,7 @@ An implementation of [gdk-graphics](https://github.com/jfcameron/gdk-graphics) u
 
 ### Quickstart
 
-Install cmake (version >= 3.21), and a c++20 compatible compiler 
+Install cmake 3.21 or greater, and a c++20 compatible compiler 
 ```
 # initialize the tree
 git submodule update --init --recursive
