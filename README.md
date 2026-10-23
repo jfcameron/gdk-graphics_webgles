@@ -15,7 +15,7 @@ cmake --preset linux-gcc-demo
 # build the library and demo programs
 cmake --build --preset linux-gcc-demo
 ```
-The above is just for demonstration, see `CMakePresets.json` for the full list of supported platforms and compilers. `linux-gcc-demo` builds the demos. The scripts in that file are the same ones used by the CI configurations (`.github/workflows/ci.yml`). They cover Linux, Windows x86 64bit and 32bit, Mac, Android, iOS and emscripten.
+The above is just a demonstration, see `CMakePresets.json` for the full list of supported platforms and compilers. `linux-gcc-demo` builds the demos. The scripts in that file are the same ones used by the CI configurations (`.github/workflows/ci.yml`). They cover Linux, Windows x86 64bit and 32bit, Mac, Android, iOS and emscripten.
 
 ### Why GLES2 and WebGL1 specifically?
 Ubiquity. OpenGL ES 2.0 (2007) is supported by nearly every phone and set-top box from 2009 onward, and it’s closely based on desktop OpenGL 2.0 (2004), covering desktops and laptops from the mid-2000s. WebGL 1.0 (2011) is based on ES 2.0, so the differences are small and the same implementation reaches hardware-accelerated browsers from the early 2010s onward. Where there’s no GPU, or no access to one (VMs, for example), software implementations such as Mesa llvmpipe and SwiftShader provide ES 2.0. So this implementation runs, or can be made to run essentially anywhere.
