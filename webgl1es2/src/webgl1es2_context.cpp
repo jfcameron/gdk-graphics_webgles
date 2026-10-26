@@ -18,11 +18,34 @@
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 
 using namespace gdk;
 using namespace gdk::graphics;
 
+namespace {
+    void load_gl_functions() {
+#if defined JFC_TARGET_PLATFORM_Linux || defined JFC_TARGET_PLATFORM_Windows
+        glewExperimental = GL_TRUE;
+
+        const GLenum err = glewInit();
+
+#if defined JFC_TARGET_PLATFORM_Linux
+        const bool loaded = err == GLEW_OK || err == GLEW_ERROR_NO_GLX_DISPLAY;
+#else
+        const bool loaded = err == GLEW_OK;
+#endif
+
+        if (!loaded)
+            throw exception(std::string("webgl1es2_context::make: glewInit failed, is a GL context current? ")
+                .append(reinterpret_cast<const char *>(glewGetErrorString(err))));
+#endif
+    }
+}
+
 context_ptr_type webgl1es2_context::make(std::optional<graphics::profile> aProfile) {
+    load_gl_functions();
+
     return context_ptr_type(new webgl1es2_context(std::move(aProfile)));
 }
 

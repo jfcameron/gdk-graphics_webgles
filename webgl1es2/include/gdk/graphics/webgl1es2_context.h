@@ -17,6 +17,7 @@ namespace gdk::graphics {
 
     class webgl1es2_context final : public graphics::context {
     public: 
+        //! needs a current GL context. Throws gdk::graphics::exception when GL's functions cannot be loaded.
         [[nodiscard]] static context_ptr_type make(std::optional<graphics::profile> aProfile = {});
 
         [[nodiscard]] shader_ptr_type make_shader(
