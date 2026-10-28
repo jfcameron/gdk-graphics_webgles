@@ -172,6 +172,19 @@ shader_ptr_type webgl1es2_context::built_in(shader_ptr_type &aCached, const std:
     return aCached;
 }
 
+std::vector<std::byte> webgl1es2_context::read_pixels(const int aX, const int aY, const int aWidth,
+    const int aHeight) const {
+    if (aWidth <= 0 || aHeight <= 0) return {};
+
+    std::vector<std::byte> out(static_cast<std::size_t>(aWidth) * static_cast<std::size_t>(aHeight) * 4);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadPixels(aX, aY, aWidth, aHeight, GL_RGBA, GL_UNSIGNED_BYTE, out.data());
+
+    return out;
+}
+
 graphics::limits webgl1es2_context::limits() const {
     return m_pProfile ? narrowest(m_Limits, m_pProfile->most) : m_Limits;
 }
