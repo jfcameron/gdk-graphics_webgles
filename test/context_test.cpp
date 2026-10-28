@@ -121,6 +121,33 @@ TEST_CASE("context construction", "[gdk::context]")
     }
 }
 
+TEST_CASE("what was drawn into the window is read back, a rectangle of it from its bottom left", "[gdk::context]")
+{
+    initGL();
+
+    const auto pContext = webgl1es2_context::make();
+    const auto pScene = pContext->make_scene();
+    const auto pCamera = pContext->make_camera();
+
+    pCamera->set_clear_color(graphics::color(1, 0, 0, 1));
+    pCamera->set_clear_mode(graphics::camera::clear_mode::color_and_depth);
+    pScene->add(pCamera);
+    pScene->draw({400, 300});
+
+    const auto read = std::static_pointer_cast<webgl1es2_context>(pContext)->read_pixels(10, 20, 3, 2);
+
+    REQUIRE(read.size() == 3 * 2 * 4);
+
+    for (std::size_t at = 0; at < read.size(); at += 4) {
+        REQUIRE(read[at] == std::byte{255});
+        REQUIRE(read[at + 1] == std::byte{0});
+        REQUIRE(read[at + 2] == std::byte{0});
+    }
+
+    REQUIRE(std::static_pointer_cast<webgl1es2_context>(pContext)->read_pixels(0, 0, 0, 2).empty());
+    REQUIRE(!webgles_test::glGetError());
+}
+
 TEST_CASE("context factories", "[gdk::context]")
 {
     initGL();

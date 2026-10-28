@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/val.h>
@@ -117,6 +118,10 @@ namespace gdk::graphics {
         webgl1es2_context &operator=(const webgl1es2_context &) = delete;
 
         virtual ~webgl1es2_context() override;
+
+        /// \brief **what was drawn into the window, read back**: a rectangle of it from aX, aY, its bottom left, red,
+        /// green, blue and alpha a byte each, a row at a time from the bottom. Before the buffers swap.
+        [[nodiscard]] std::vector<std::byte> read_pixels(int aX, int aY, int aWidth, int aHeight) const;
 
     private:
         explicit webgl1es2_context(std::optional<graphics::profile> aProfile);
