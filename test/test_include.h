@@ -1,50 +1,36 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef GDK_GRAPHICS_WEBGLES_TEST_INCLUDE_H
 #define GDK_GRAPHICS_WEBGLES_TEST_INCLUDE_H
 
-#include <gdk/graphics_webgles/build_info.h>
-
-#include <stdexcept>
-
-#if defined JFC_TARGET_PLATFORM_Linux || defined JFC_TARGET_PLATFORM_Windows
-#define GLEW_STATIC
-#include <GL/glew.h>
-#elif defined JFC_TARGET_PLATFORM_Darwin
-#include <OpenGL/gl3.h>
-#endif
-
-#include <GLFW/glfw3.h>
+#include <gdk/graphics/opengl.h>
+#include <gdk/windowing/glfw_context.h>
 
 #include <iostream>
+#include <memory>
 #include <optional>
+#include <stdexcept>
+#include <string>
 
-inline void initGL()
-{
-    static bool bFirst = true;
+//! a window whose GL context is current, for the whole test run
+inline void initGL() {
+    static const auto pWindow = [] {
+        static const auto pWindowing = gdk::windowing::glfw_context::make();
 
-    if (bFirst)
-    {
-        if (!glfwInit()) throw std::runtime_error(std::string("InitGL").append("/glfwInit failed"));
+        auto pMade = pWindowing->make_window("gdk-graphics_webgles test", {400, 300});
 
-        glfwWindowHint(GLFW_RESIZABLE, true);
+#if GDK_GRAPHICS_GLEW
+        glewExperimental = GL_TRUE;
 
-        if (GLFWwindow *pWindow = glfwCreateWindow(400, 300, "gdk window", nullptr, nullptr))
-        {
-            glfwMakeContextCurrent(pWindow);
-            glfwSwapInterval(-1); 
-            glfwSwapBuffers(pWindow);
-
-#if defined JFC_TARGET_PLATFORM_Linux || defined JFC_TARGET_PLATFORM_Windows
-            if (const GLenum err = glewInit(); err != GLEW_OK)
-                throw std::runtime_error(std::string("InitGL/glewInit failed: ")
-                    .append(reinterpret_cast<const char *>(glewGetErrorString(err))));
+        if (const GLenum err = glewInit(); err != GLEW_OK && err != GLEW_ERROR_NO_GLX_DISPLAY)
+            throw std::runtime_error(std::string("initGL: glewInit failed: ")
+                .append(reinterpret_cast<const char *>(glewGetErrorString(err))));
 #endif
-        }
-        else throw std::runtime_error(std::string("InitGL").append("/glfw window init failed"));
 
-        bFirst = false;
-    }
+        return pMade;
+    }();
+
+    static_cast<void>(pWindow);
 }
 
 [[nodiscard]] inline std::optional<GLint> texture_level_width(const GLuint aHandle, const GLint aLevel)

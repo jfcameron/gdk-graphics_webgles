@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef GDK_DEMO_CONTENT_H
 #define GDK_DEMO_CONTENT_H

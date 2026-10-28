@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include <gdk/graphics/webgl1es2_gl_state.h>
 
@@ -90,7 +90,7 @@ namespace {
             pCamera->set_perspective_projection(1.0f, 0.1f, 100.0f, 1.0f);
             pCamera->set_transform(vector3_type::zero, quaternion_type::identity);
 
-            static_cast<void>(pCamera->get_color_texture(0));
+            static_cast<void>(pCamera->color_texture());
 
             scene.add(pEntity);
             scene.add(pCamera);

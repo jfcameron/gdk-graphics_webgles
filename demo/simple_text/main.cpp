@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include <embedded_font.h>
 
@@ -6,7 +6,7 @@
 #include <gdk/graphics/ext/text_modeler.h>
 
 #include <gdk/timing/game_loop.h>
-#include <gdk/windowing/impl_glfw_window.h>
+#include <gdk/windowing/glfw_window.h>
 #include <gdk/graphics/context.h>
 #include <gdk/graphics/scene.h>
 #include <gdk/graphics/texture_data.h>
@@ -14,6 +14,7 @@
 
 #include <demo/event.h>
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <array>
@@ -32,12 +33,13 @@
 #include <unordered_set>
 
 using namespace gdk;
+using namespace gdk::math;
 
 using namespace gdk::graphics;
 using namespace gdk::timing;
 
 int main() {
-    const auto pWindow = windowing::impl_glfw_window::make("basic rendering demo");
+    const auto pWindow = windowing::glfw_window::make("basic rendering demo");
 
     demo::event<float, float> update_event;
 
@@ -99,7 +101,7 @@ int main() {
 
         const auto pMaterial = pGraphics->make_material(pGraphics->make_alpha_cutoff_shader());
         pMaterial->set_texture("_Texture", pTexture);
-        pMaterial->set_vector2("_UVScale", {4});
+        pMaterial->set_vector2("_UVScale", {4, 4});
         pMaterial->set_vector2("_UVOffset", {0.0, 0});
 
         const auto pModel = [&]() {
@@ -123,7 +125,7 @@ int main() {
     game_loop(frames_per_second{60}, [&](const game_loop::frame aFrame) {
         const auto time = static_cast<float>(aFrame.elapsed);
         const auto deltaTime = static_cast<float>(aFrame.delta);
-        windowing::impl_glfw_window::poll_events();
+        windowing::glfw_window::poll_events();
         update_event.notify(time, deltaTime);
         pScene->draw(pWindow->window_size());
         pWindow->swap_buffers(); 

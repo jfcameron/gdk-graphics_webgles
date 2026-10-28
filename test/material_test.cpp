@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include <gdk/graphics/webgl1es2_gl_state.h>
 #include "test_include.h"

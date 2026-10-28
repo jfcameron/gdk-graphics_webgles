@@ -1,20 +1,18 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include "volume_block_model.h"
 #include "volumetric_lighting.h"
 
 #include <gdk/timing/game_loop.h>
-#include <gdk/windowing/impl_glfw_window.h>
+#include <gdk/windowing/glfw_window.h>
 #include <gdk/graphics/constraints.h>
 #include <gdk/graphics/context.h>
 #include <gdk/graphics/exception.h>
-#include <gdk/math_constants.h>
+#include <gdk/math/constants.h>
 #include <gdk/graphics/scene.h>
 #include <gdk/graphics/ext/png.h>
 #include <gdk/graphics/texture_data.h>
 #include <gdk/graphics/webgl1es2_context.h>
-#include <gdk/graphics/webgl1es2_shader_program.h>
-#include <gdk/graphics/webgl1es2_texture.h>
 #include "cube_array.h"
 
 #include <algorithm>
@@ -31,8 +29,8 @@
 #include <unordered_set>
 #include <vector>
 
-using namespace jfc;
 using namespace gdk;
+using namespace gdk::math;
 using namespace gdk::graphics;
 using namespace gdk::timing;
 using namespace gdk::ext::volume;
@@ -376,7 +374,7 @@ std::array<texture_data::channel_type, 64 * 64> blockTypeToUVTextureMapData = []
 }();
 
 int main() {
-    const auto pWindow = windowing::impl_glfw_window::make("volumetric blocks + volumetric lighting");
+    const auto pWindow = windowing::glfw_window::make("volumetric blocks + volumetric lighting");
 
     const auto pGraphics = webgl1es2_context::make();
     const auto pScene = pGraphics->make_scene();
@@ -519,7 +517,7 @@ int main() {
         }
         )V0G0N");
 
-        return std::static_pointer_cast<webgl1es2_context>(pGraphics)->make_shader(vertexShaderSource,fragmentShaderSource);
+        return pGraphics->make_shader(vertexShaderSource,fragmentShaderSource);
     }();
 
     auto pMaterial = [&]() {
@@ -567,7 +565,7 @@ int main() {
         }
         )V0G0N");
 
-        return std::static_pointer_cast<webgl1es2_context>(pGraphics)->make_shader(vertexShaderSource,fragmentShaderSource);
+        return pGraphics->make_shader(vertexShaderSource,fragmentShaderSource);
     }();   
 
     auto pSkyboxMaterial = pGraphics->make_material(pSkyboxShader);
@@ -907,7 +905,7 @@ int main() {
 
     game_loop(frames_per_second{59}, [&](const game_loop::frame aFrame) {
         const auto time = static_cast<float>(aFrame.elapsed);
-        windowing::impl_glfw_window::poll_events();
+        windowing::glfw_window::poll_events();
 
         lighting = staticLights;
         lighting.add_point_light({8, 1, 8}, std::abs(std::sin(time)) * 10.f, {1.0, 1.0, 1.0});

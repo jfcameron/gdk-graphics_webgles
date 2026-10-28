@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include "conformance.h"
 #include "test_include.h"
@@ -18,4 +18,6 @@ namespace gdk::graphics::conformance {
     std::string_view implementation() { return "webgles"; }
 
     profile minimum_profile() { return webgl1_minimum(); }
+
+    bool checks_shaders() { return true; }
 }

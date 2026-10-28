@@ -1,7 +1,7 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include <gdk/timing/game_loop.h>
-#include <gdk/windowing/impl_glfw_window.h>
+#include <gdk/windowing/glfw_window.h>
 #include <gdk/graphics/context.h>
 #include <gdk/graphics/scene.h>
 #include <gdk/graphics/texture_data.h>
@@ -20,12 +20,13 @@
 #include <unordered_set>
 
 using namespace gdk;
+using namespace gdk::math;
 
 using namespace gdk::graphics;
 using namespace gdk::timing;
 
 int main() {
-    const auto pWindow = windowing::impl_glfw_window::make("per entity and per triangle translucency");
+    const auto pWindow = windowing::glfw_window::make("per entity and per triangle translucency");
 
     auto pContext = webgl1es2_context::make();
     auto pScene = pContext->make_scene();
@@ -145,7 +146,7 @@ int main() {
     auto pEntity3 = [&]() {    
         auto pMaterial = [&]() {
             auto pMaterial = pContext->make_material(pAlpha);
-            pMaterial->set_texture("_Texture", pTextureCamera->get_color_texture());
+            pMaterial->set_texture("_Texture", pTextureCamera->color_texture());
             pMaterial->set_vector2("_UVScale", {1, 1});
             pMaterial->set_vector2("_UVOffset", {0, 0});
             return pMaterial;
@@ -161,7 +162,7 @@ int main() {
     
     game_loop(frames_per_second{60}, [&](const game_loop::frame aFrame) {
         const auto time = static_cast<float>(aFrame.elapsed);
-        windowing::impl_glfw_window::poll_events();
+        windowing::glfw_window::poll_events();
 
         pCamera->set_perspective_projection(to_radians(90.0f), 0.01f, 20, static_cast<floating_point_type>(pWindow->aspect_ratio()));
         matrix4x4_type matCamera;

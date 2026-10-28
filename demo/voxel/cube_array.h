@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef DEMO_CUBE_ARRAY_H
 #define DEMO_CUBE_ARRAY_H

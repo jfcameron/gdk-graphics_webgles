@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef GDK_GFX_VOLUMETRIC_LIGHTING_H
 #define GDK_GFX_VOLUMETRIC_LIGHTING_H
@@ -58,7 +58,7 @@ namespace gdk::graphics {
 
         /// \brief add a pointlight to the light volume
         void add_point_light(intvector3_type aLightPosition, const float aSize, const gdk::graphics::color &aColor) {
-            const gdk::vector3<float> CENTRE(aSize/2.f); 
+            const gdk::math::vector3<float> CENTRE(aSize/2.f); 
             const auto HALF(aSize/2.f);
 
             aLightPosition.x = static_cast<intvector3_type::component_type>(aLightPosition.x - HALF);
@@ -66,7 +66,7 @@ namespace gdk::graphics {
             aLightPosition.z = static_cast<intvector3_type::component_type>(aLightPosition.z - HALF);
 
             for (int x(0); x < aSize; ++x) for (int y(0); y < aSize; ++y) for (int z(0); z < aSize; ++z) {
-                float distanceFromCentre = CENTRE.distance_from(gdk::vector3<float>(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)));
+                float distanceFromCentre = CENTRE.distance_from(gdk::math::vector3<float>(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)));
                 float normalizedHalfDistanceFromCentre = distanceFromCentre / HALF; 
                 float intensity = (1.0f / std::sqrt(normalizedHalfDistanceFromCentre)) - 1.0f; 
                 intensity = std::clamp(intensity, 0.0f, 1.0f);
