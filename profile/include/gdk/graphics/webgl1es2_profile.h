@@ -1,7 +1,7 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
-#ifndef GDK_GFX_WEBGL1ES2_PROFILE_H
-#define GDK_GFX_WEBGL1ES2_PROFILE_H
+#ifndef GDK_GRAPHICS_WEBGL1ES2_PROFILE_H
+#define GDK_GRAPHICS_WEBGL1ES2_PROFILE_H
 
 #include <gdk/graphics/profile.h>
 

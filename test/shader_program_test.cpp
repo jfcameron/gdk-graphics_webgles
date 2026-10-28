@@ -1,5 +1,6 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
+#include <gdk/graphics/webgl1es2_context.h>
 #include <gdk/graphics/webgl1es2_gl_state.h>
 #include <jfc/catch.hpp>
 #include <jfc/types.h>
@@ -523,7 +524,7 @@ TEST_CASE("gdk::webgl1es2_shader_program texture units", "[gdk::webgl1es2_shader
 
     const texture_units_restored restore;
 
-    const auto limit = program::MAX_TEXTURE_UNITS();
+    const auto limit = test_gl_state().texture_unit_limit();
 
     GLint deviceUnits = 0;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &deviceUnits);
@@ -564,22 +565,17 @@ TEST_CASE("gdk::webgl1es2_shader_program texture units", "[gdk::webgl1es2_shader
     }
 }
 
-TEST_CASE("gdk::webgl1es2_shader_program device limits", "[gdk::webgl1es2_shader_program]")
+TEST_CASE("a context's limits are the device's, at or above the es2 minimums", "[gdk::webgl1es2_shader_program]")
 {
     initGL();
 
-    SECTION("the texture unit count is the guaranteed minimum, not this device's maximum")
-    {
-        REQUIRE(program::MAX_TEXTURE_UNITS() == 8);
-    }
+    const auto limits = gdk::graphics::webgl1es2_context::make()->limits();
 
-    SECTION("the uniform vector limits come back at or above the es2 minimums")
-    {
-        REQUIRE(program::MAX_VERTEX_SHADER_UNIFORM_VECTORS() >= 128);
-        REQUIRE(program::MAX_FRAGMENT_SHADER_UNIFORM_VECTORS() >= 16);
+    REQUIRE(limits.texture_units >= 8);
+    REQUIRE(limits.vertex_uniform_vectors >= 128);
+    REQUIRE(limits.fragment_uniform_vectors >= 16);
 
-        REQUIRE(!webgles_test::glGetError());
-    }
+    REQUIRE(!webgles_test::glGetError());
 }
 
 

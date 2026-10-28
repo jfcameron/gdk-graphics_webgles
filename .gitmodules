@@ -4,12 +4,12 @@
 [submodule "extern/gdk-graphics"]
 	path = extern/gdk-graphics
 	url = https://github.com/jfcameron/gdk-graphics.git
-[submodule "extern/gdk-windowing"]
-	path = extern/gdk-windowing
-	url = https://github.com/jfcameron/gdk-windowing.git
-[submodule "extern/gdk-time"]
-	path = extern/gdk-time
-	url = https://github.com/jfcameron/gdk-time.git
 [submodule "extern/jfc-smart_handles"]
 	path = extern/jfc-smart_handles
 	url = https://github.com/jfcameron/jfc-smart_handles.git
+[submodule "extern/gdk-windowing_glfw"]
+	path = extern/gdk-windowing_glfw
+	url = https://github.com/jfcameron/gdk-windowing_glfw.git
+[submodule "extern/gdk-timing"]
+	path = extern/gdk-timing
+	url = https://github.com/jfcameron/gdk-timing.git

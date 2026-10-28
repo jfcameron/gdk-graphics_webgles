@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include "content.h"
 
@@ -9,6 +9,7 @@
 #include <string>
 
 using namespace gdk;
+using namespace gdk::math;
 
 using namespace gdk::graphics;
 

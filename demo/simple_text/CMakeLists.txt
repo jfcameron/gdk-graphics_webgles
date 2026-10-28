@@ -1,4 +1,4 @@
-# © Joseph Cameron - All Rights Reserved
+# © Joseph Cameron - MIT License
 
 project(simple_text_demo)
 
@@ -21,7 +21,7 @@ target_include_directories(simple_text_demo
         "${CMAKE_CURRENT_BINARY_DIR}/generated"
 )
 
-target_link_libraries(simple_text_demo PRIVATE gdkgraphics_webgles gdkwindow gdktime)
+target_link_libraries(simple_text_demo PRIVATE gdkgraphics_webgles gdkwindowing_glfw gdktiming)
 
 target_compile_features(simple_text_demo PRIVATE cxx_std_20)
 

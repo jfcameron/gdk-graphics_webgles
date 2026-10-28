@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef DEMO_EVENT_H
 #define DEMO_EVENT_H

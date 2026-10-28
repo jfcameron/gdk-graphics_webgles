@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include <jfc/catch.hpp>
 #include <jfc/types.h>
@@ -224,11 +224,10 @@ TEST_CASE("context resource independence", "[gdk::context]")
         REQUIRE(pFirst.get() != pSecond.get());
     }
 
-    SECTION("each call builds a new built-in, and the caller owns what it gets")
+    SECTION("each call builds a new built in model, while the built in shaders are made once and shared")
     {
         REQUIRE(pContext->make_cube_model().get() != pContext->make_cube_model().get());
-        REQUIRE(pContext->make_alpha_cutoff_shader().get()
-            != pContext->make_alpha_cutoff_shader().get());
+        REQUIRE(pContext->make_alpha_cutoff_shader().get() == pContext->make_alpha_cutoff_shader().get());
     }
 
     SECTION("a second context is allowed, and has its own gl state cache")
@@ -237,8 +236,24 @@ TEST_CASE("context resource independence", "[gdk::context]")
 
         REQUIRE(pSecond);
 
-        REQUIRE(std::static_pointer_cast<webgl1es2_context>(pSecond)->state()
-            != std::static_pointer_cast<webgl1es2_context>(pContext)->state());
+        static_cast<void>(pContext->take_counts());
+        static_cast<void>(pSecond->take_counts());
+
+        const auto pScene = pContext->make_scene();
+        const auto pCamera = pContext->make_camera();
+
+        pScene->add(pCamera);
+        pScene->add(pContext->make_entity(pContext->make_cube_model(),
+            pContext->make_material(pContext->make_alpha_cutoff_shader())));
+
+        const auto pEntity = pContext->make_entity(pContext->make_cube_model(),
+            pContext->make_material(pContext->make_alpha_cutoff_shader()));
+
+        pScene->add(pEntity);
+        pScene->draw({64, 64});
+
+        REQUIRE(pContext->take_counts().programs > 0);
+        REQUIRE(pSecond->take_counts().programs == 0);
     }
 }
 

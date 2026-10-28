@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #ifndef GDK_GFX_EXT_VOLUMETRIC_BLOCK_H
 #define GDK_GFX_EXT_VOLUMETRIC_BLOCK_H

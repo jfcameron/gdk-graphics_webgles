@@ -1,4 +1,4 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
 #include <string>
 
@@ -187,7 +187,7 @@ namespace {
             pCamera->set_transform(vector3_type::zero, quaternion_type::identity);
             pCamera->set_clear_color(color(0, 0, 0, 1));
 
-            static_cast<void>(pCamera->get_color_texture(0));
+            static_cast<void>(pCamera->color_texture());
         }
 
         ~empty_model_probe() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }

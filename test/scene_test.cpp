@@ -1,6 +1,6 @@
-// © Joseph Cameron - All Rights Reserved
+// © Joseph Cameron - MIT License
 
-#include <gdk/math_constants.h>
+#include <gdk/math/constants.h>
 #include <gdk/graphics/webgl1es2_gl_state.h>
 #include <jfc/catch.hpp>
 #include <jfc/types.h>
@@ -437,7 +437,7 @@ TEST_CASE("gdk::webgl1es2_scene draw order", "[gdk::webgl1es2_scene]")
         require_matches(read_mvp(), expected_mvp(*pCamera, *pA));
 
         pCamera->set_transform({0, 0, -50},
-            quaternion_type::from_euler(vector3_type{0, gdk::numbers::pi_v<float>, 0}));
+            quaternion_type::from_euler(vector3_type{0, gdk::math::numbers::pi_v<float>, 0}));
 
         scene.draw(FRAME_BUFFER_SIZE);
         require_matches(read_mvp(), expected_mvp(*pCamera, *pB));

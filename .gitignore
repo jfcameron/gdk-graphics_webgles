@@ -2,6 +2,3 @@
 *.swp
 out/
 CMakeUserPresets.json
-
-fuzz/corpus/**/working/
-fuzz/corpus/**/*.working/
