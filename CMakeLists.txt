@@ -18,10 +18,19 @@ option(GDKGRAPHICS_WEBGLES_BUILD_DEMO "Build the demos" OFF)
 option(GDKGRAPHICS_WEBGLES_BUILD_DOCS "Build documentation" OFF)
 option(GDKGRAPHICS_WEBGLES_INSTALL "Generate install rules, a vendored GLEW's included" ${PROJECT_IS_TOP_LEVEL})
 
-if (GDKGRAPHICS_WEBGLES_BUILD_DOCS AND NOT GDKGRAPHICS_WEBGLES_BUILD_TESTS AND NOT GDKGRAPHICS_WEBGLES_BUILD_DEMO)
-    add_subdirectory(docs)
+if (GDKGRAPHICS_WEBGLES_BUILD_DOCS)
+    jfc_generate_documentation_doxygen(
+        README_PATH      README.md
+        OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/docs
 
-    return()
+        INCLUDE_DIRECTORIES
+            include
+            profile/include
+    )
+
+    if (NOT GDKGRAPHICS_WEBGLES_BUILD_TESTS AND NOT GDKGRAPHICS_WEBGLES_BUILD_DEMO)
+        return()
+    endif()
 endif()
 
 set(GDKGRAPHICS_WEBGLES_USES_GLEW OFF)
@@ -194,8 +203,4 @@ endif()
 
 if (GDKGRAPHICS_WEBGLES_BUILD_DEMO)
     add_subdirectory(demo)
-endif()
-
-if (GDKGRAPHICS_WEBGLES_BUILD_DOCS)
-    add_subdirectory(docs)
 endif()
