@@ -95,16 +95,16 @@ namespace gdk::graphics {
         //! assign a float4 uniform from a 4 component vector
         bool try_set_uniform(const std::string_view aName, const vector4_type &aValue) const;
         //! assign a float uniform array from an array of floats
-        bool try_set_uniform(const std::string_view aName, const std::vector<GLfloat> &avalue) const;
+        bool try_set_uniform(const std::string_view aName, const std::vector<GLfloat> &aValue) const;
         //! assign a float2 uniform array from an array of float2s
-        bool try_set_uniform(const std::string_view aName, const std::vector<vector2_type> &avalue) const; 
+        bool try_set_uniform(const std::string_view aName, const std::vector<vector2_type> &aValue) const; 
         //! assign a value to a float3 uniform array from a vector of float3s
-        bool try_set_uniform(const std::string_view aName, const std::vector<vector3_type> &avalue) const;
+        bool try_set_uniform(const std::string_view aName, const std::vector<vector3_type> &aValue) const;
         //! assign an RGBA colour to a float4 uniform
         bool try_set_uniform(const std::string_view aName, const color &aValue) const;
 
         //! assign a value to a float4 uniform array from a vector of float4s
-        bool try_set_uniform(const std::string_view aName, const std::vector<vector4_type> &avalue) const; 
+        bool try_set_uniform(const std::string_view aName, const std::vector<vector4_type> &aValue) const; 
 
         //! assign a value to a integer uniform
         bool try_set_uniform(const std::string_view aName, const GLint aValue) const;
@@ -124,27 +124,16 @@ namespace gdk::graphics {
         //! assign a value to a integer4 uniform array
         bool try_set_uniform(const std::string_view aName, const std::vector<integer4_uniform_type> &aValue) const;
 
-
-        //! assign a value to a bool uniform array 
-        //bool try_set_uniform(const std::string_view aName, const std::vector<bool> &aValue) const;
-        //! assign a value to a bvec2 uniform array
-        //bool try_set_uniform(const std::string>&aName, const std::vector<boolean2_uniform_type> &a) const;
-        //! assign a value to a bvec3 uniform array
-        //bool try_set_uniform(const std::string>&aName, const std::vector<boolean3_uniform_type> &a) const;
-        //! assign a value to a bvec4 uniform array
-        //bool try_set_uniform(const std::string>&aName, const std::vector<boolean4_uniform_type> &a) const;
-
-
         //! assign a mat3x3 uniform from a mat3x3
-        bool try_set_uniform(const std::string_view aName, const mat3x3_type &avalue) const;
+        bool try_set_uniform(const std::string_view aName, const mat3x3_type &aValue) const;
         //! assign a mat3x3 uniform array from a vector of mat3x3s
         bool try_set_uniform(const std::string_view aName,
-            const std::vector<mat3x3_type> &avalue) const;
+            const std::vector<mat3x3_type> &aValue) const;
 
         //! assign a mat4x4 uniform from a mat4x4
-        bool try_set_uniform(const std::string_view aName, const matrix4x4_type &avalue) const; 
+        bool try_set_uniform(const std::string_view aName, const matrix4x4_type &aValue) const; 
         //! assign a mat4x4 uniform array from a vector of mat4x4s
-        bool try_set_uniform(const std::string_view aName, const std::vector<matrix4x4_type> &avalue) const; 
+        bool try_set_uniform(const std::string_view aName, const std::vector<matrix4x4_type> &aValue) const; 
 
         //! bind a texture to the context then assign it to a texture uniform
         /// \throws gdk::graphics::exception past the context's texture units
@@ -169,13 +158,9 @@ namespace gdk::graphics {
         //! a number no other program made in this process has had, unlike the gl name, which gl reuses
         [[nodiscard]] std::uint64_t serial() const;
                 
-        /// \brief equality semantics
         bool operator==(const webgl1es2_shader_program &) const; 
-        /// \brief equality semantics
 
-        /// \brief move semantics
         webgl1es2_shader_program(webgl1es2_shader_program &&) = default;
-        /// \brief move semantics
         webgl1es2_shader_program &operator=(webgl1es2_shader_program &&) = default;
         
         /// \brief constructs a shader program with glsl source file contents for a vertex shader and a fragment shader 
@@ -199,10 +184,8 @@ namespace gdk::graphics {
         static const std::string_view ALPHA_BLEND_FRAGMENT;
     
     private:
-        //! handle to the  vertex shader
         jfc::unique_handle<GLuint> m_VertexShaderHandle;
 
-        //! handle to the fragment shader
         jfc::unique_handle<GLuint> m_FragmentShaderHandle;
 
         //! handle to the program in the gl context.

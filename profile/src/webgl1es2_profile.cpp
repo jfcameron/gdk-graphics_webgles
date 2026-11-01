@@ -103,8 +103,8 @@ namespace {
     }
 
     [[nodiscard]] std::optional<std::size_t> number_of(const std::string &aWord) {
-        if (aWord.empty() || !std::all_of(aWord.begin(), aWord.end(), [](const char aC) {
-            return std::isdigit(static_cast<unsigned char>(aC)) != 0;
+        if (aWord.empty() || !std::all_of(aWord.begin(), aWord.end(), [](const char aCharacter) {
+            return std::isdigit(static_cast<unsigned char>(aCharacter)) != 0;
         })) return std::nullopt;
 
         return static_cast<std::size_t>(std::stoull(aWord));

@@ -75,10 +75,6 @@ namespace webgles_test
                 errorcodebuffer = "GL_INVALID_OPERATION";
                 break;
 
-            //case(GL_INVALID_FRAMEBUFFER_OPERATION):
-            //    errorcodebuffer = "GL_INVALID_FRAMEBUFFER_OPERATION";
-                //break;
-
             case(GL_OUT_OF_MEMORY):
                 errorcodebuffer = "GL_OUT_OF_MEMORY";
                 break;

@@ -12,8 +12,8 @@
 using namespace gdk;
 using namespace gdk::graphics;
 
-webgl1es2_entity::webgl1es2_entity(const std::shared_ptr<webgl1es2_model> amodel, const std::shared_ptr<webgl1es2_material> aMaterial)
-: m_model(amodel)
+webgl1es2_entity::webgl1es2_entity(const std::shared_ptr<webgl1es2_model> aModel, const std::shared_ptr<webgl1es2_material> aMaterial)
+: m_model(aModel)
 , m_Material(aMaterial)
 {}
 
@@ -70,8 +70,8 @@ void webgl1es2_entity::set_transform(const vector3_type &aWorldPos, const quater
     m_ModelMatrix.set_rotation_and_scale(aRotation, aScale);
 }
 
-void webgl1es2_entity::set_transform(const matrix4x4_type& a) {
-	m_ModelMatrix = a;
+void webgl1es2_entity::set_transform(const matrix4x4_type& aTransform) {
+	m_ModelMatrix = aTransform;
 }
 
 const std::shared_ptr<webgl1es2_model> &webgl1es2_entity::getModel() const {

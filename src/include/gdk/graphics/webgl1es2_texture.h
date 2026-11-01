@@ -28,7 +28,7 @@ namespace gdk::graphics {
     ///@{
     //
         virtual void update_data(const texture_data::view &) override;
-        virtual void update_data(const texture_data::view &, const std::size_t offsetX, const std::size_t offsetY) override;
+        virtual void update_data(const texture_data::view &, const std::size_t aOffsetX, const std::size_t aOffsetY) override;
     ///@}
 
         //! The webgl1es2_texture minifying function is used whenever the pixel being 
@@ -97,12 +97,9 @@ namespace gdk::graphics {
         /// so that it can be manipulated by other opengl calls
         void activateAndBind(const GLint aUnit) const;
 
-        /// \brief equality semantics
         bool operator==(const webgl1es2_texture &) const;
 
-        /// \brief move semantics
         webgl1es2_texture &operator=(webgl1es2_texture &&) = default;
-        /// \brief move semantics
         webgl1es2_texture(webgl1es2_texture &&) = default;
 
         /// \brief creates a 2d webgl1es2_texture from decoded image data.
@@ -113,8 +110,8 @@ namespace gdk::graphics {
             const texture_data::view &aTextureView,
             const wrap_mode aWrapModeU = wrap_mode::repeat,
             const wrap_mode aWrapModeV = wrap_mode::repeat,
-            const minification_filter minFilter = minification_filter::nearest,
-            const magnification_filter magFilter = magnification_filter::nearest);
+            const minification_filter aMinFilter = minification_filter::nearest,
+            const magnification_filter aMagFilter = magnification_filter::nearest);
 
         webgl1es2_texture(
             const webgl1es2_texture::format aFormat, 
@@ -123,8 +120,8 @@ namespace gdk::graphics {
             const texture_data::channel_type *aData,
             const wrap_mode aWrapModeU = wrap_mode::repeat,
             const wrap_mode aWrapModeV = wrap_mode::repeat,
-            const minification_filter minFilter = minification_filter::nearest,
-            const magnification_filter magFilter = magnification_filter::nearest);
+            const minification_filter aMinFilter = minification_filter::nearest,
+            const magnification_filter aMagFilter = magnification_filter::nearest);
 
         /// \brief a texture useful for indicating a texture related failure
         ///

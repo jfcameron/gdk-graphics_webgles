@@ -50,7 +50,7 @@ void render_set::prune() const {
     std::erase_if(m_MaterialToModelToEntityCollection, [](auto &aMaterial) {
         std::erase_if(aMaterial.second, [](auto &aModel) {
             std::erase_if(aModel.second,
-                [](const entity_weak_ptr_type &a) { return a.expired(); });
+                [](const entity_weak_ptr_type &aWeak) { return aWeak.expired(); });
 
             return aModel.second.empty();
         });
@@ -73,8 +73,8 @@ void render_set::remove(const entity *const apEntity) {
     for (auto &[material, models] : m_MaterialToModelToEntityCollection)
         for (auto &[model, entities] : models)
             entities.erase(std::remove_if(entities.begin(), entities.end(),
-                [apEntity](const entity_weak_ptr_type &a) {
-                    const auto pLocked = a.lock();
+                [apEntity](const entity_weak_ptr_type &aWeak) {
+                    const auto pLocked = aWeak.lock();
 
                     return !pLocked || pLocked.get() == apEntity;
                 }), entities.end());
@@ -99,9 +99,9 @@ namespace {
 
         if (!pOwn) throw exception("webgl1es2_scene: the camera was made by another kind of context");
 
-        std::erase_if(aHeld, [](const auto &a) { return a.expired(); });
+        std::erase_if(aHeld, [](const auto &aWeak) { return aWeak.expired(); });
 
-        if (std::none_of(aHeld.begin(), aHeld.end(), [&](const auto &a) { return a.lock() == pOwn; }))
+        if (std::none_of(aHeld.begin(), aHeld.end(), [&](const auto &aWeak) { return aWeak.lock() == pOwn; }))
             aHeld.push_back(std::move(pOwn));
     }
 }
@@ -115,8 +115,8 @@ void webgl1es2_scene::remove(const std::shared_ptr<const screen_camera> &pCamera
 
     const auto *const pTarget = pCamera.get();
 
-    std::erase_if(m_screen_cameras, [pTarget](const std::weak_ptr<const webgl1es2_screen_camera> &a) {
-        const auto pLocked = a.lock();
+    std::erase_if(m_screen_cameras, [pTarget](const std::weak_ptr<const webgl1es2_screen_camera> &aWeak) {
+        const auto pLocked = aWeak.lock();
 
         return !pLocked || pLocked.get() == pTarget;
     });
@@ -127,8 +127,8 @@ void webgl1es2_scene::remove(const std::shared_ptr<const texture_camera> &pCamer
 
     const auto *const pTarget = pCamera.get();
 
-    std::erase_if(m_texture_cameras, [pTarget](const std::weak_ptr<const webgl1es2_texture_camera> &a) {
-        const auto pLocked = a.lock();
+    std::erase_if(m_texture_cameras, [pTarget](const std::weak_ptr<const webgl1es2_texture_camera> &aWeak) {
+        const auto pLocked = aWeak.lock();
 
         return !pLocked || pLocked.get() == pTarget;
     });
@@ -192,7 +192,7 @@ void sorted_render_set::draw(const webgl1es2_camera *pCamera, gl_state &aState,
     }
 
     std::sort(byDepth.begin(), byDepth.end(),
-        [](const auto &aA, const auto &aB) { return aA.first > aB.first; });
+        [](const auto &aLeft, const auto &aRight) { return aLeft.first > aRight.first; });
 
     for (const auto &[depth, pEntity] : byDepth) {
         if (culled(*pEntity, aFrustum)) continue;
@@ -286,8 +286,8 @@ void webgl1es2_scene::draw(const gdk::graphics::intvector2_type &aFrameBufferSiz
 
         std::vector<std::shared_ptr<const camera_type>> out;
 
-        std::erase_if(aCameras, [&out](const std::weak_ptr<const camera_type> &a) {
-            if (auto pLocked = a.lock()) {
+        std::erase_if(aCameras, [&out](const std::weak_ptr<const camera_type> &aWeak) {
+            if (auto pLocked = aWeak.lock()) {
                 out.push_back(std::move(pLocked));
 
                 return false;

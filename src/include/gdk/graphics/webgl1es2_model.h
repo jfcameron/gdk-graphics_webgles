@@ -42,7 +42,7 @@ namespace gdk::graphics {
         void draw() const;
 
         //! replace current data in the vbo and ibo with new data
-        virtual void upload(const usage_hint &, const model_data& vertexDataView) override;
+        virtual void upload(const usage_hint &, const model_data& aVertexDataView) override;
 
         //! centre of the model's bounding sphere, in its own space. \see m_BoundsCentre
         [[nodiscard]] const vector3_type &bounds_centre() const { return m_BoundsCentre; }
@@ -56,7 +56,7 @@ namespace gdk::graphics {
         webgl1es2_model(webgl1es2_model &&) = default;
            
         //! disable copy semantics
-        webgl1es2_model &operator=(const webgl1es2_model &other) = delete;
+        webgl1es2_model &operator=(const webgl1es2_model &aOther) = delete;
         //! disable copy semantics
         webgl1es2_model(const webgl1es2_model &) = delete;
       

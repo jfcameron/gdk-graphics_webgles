@@ -196,8 +196,8 @@ webgl1es2_shader_program::webgl1es2_shader_program(std::string aVertexSource, st
     glShaderSource(hVertexShader, 1, &arrayOfSourceCodeStrings, 0);
     glCompileShader(hVertexShader);
 
-    return decltype(m_VertexShaderHandle)(hVertexShader, [](const GLuint handle) {
-        glDeleteShader(handle);
+    return decltype(m_VertexShaderHandle)(hVertexShader, [](const GLuint aHandle) {
+        glDeleteShader(aHandle);
     });
 }())
 , m_FragmentShaderHandle([&aFragmentSource]() {
@@ -209,16 +209,16 @@ webgl1es2_shader_program::webgl1es2_shader_program(std::string aVertexSource, st
     glShaderSource(hFragmentShader, 1, &arrayOfSourceCodeStrings, 0);
     glCompileShader(hFragmentShader);
 
-    return decltype(m_FragmentShaderHandle)(hFragmentShader, [](const GLuint handle) {
-        glDeleteShader(handle);
+    return decltype(m_FragmentShaderHandle)(hFragmentShader, [](const GLuint aHandle) {
+        glDeleteShader(aHandle);
     });
 }())
 , m_ProgramHandle([this]() {
     const auto hVertexShader(m_VertexShaderHandle.get());
     const auto hFragmentShader(m_FragmentShaderHandle.get());
 
-    jfc::unique_handle<GLuint> program(glCreateProgram(), [](const GLuint handle) {
-        glDeleteProgram(handle);
+    jfc::unique_handle<GLuint> program(glCreateProgram(), [](const GLuint aHandle) {
+        glDeleteProgram(aHandle);
     });
 
     const auto hShaderProgram(program.get());
@@ -235,8 +235,8 @@ webgl1es2_shader_program::webgl1es2_shader_program(std::string aVertexSource, st
         
         message << "A shader could not be linked!\n";
         
-        static const auto decorator = [](std::ostringstream& ss, std::string log_header, std::string &&log_msg) {
-            ss  << log_header << "\n" << (log_msg.size() ? log_msg : "clear") << "\n\n";
+        static const auto decorator = [](std::ostringstream& aStream, std::string aLogHeader, std::string &&aLogMsg) {
+            aStream  << aLogHeader << "\n" << (aLogMsg.size() ? aLogMsg : "clear") << "\n\n";
         };
 
         decorator(message, "vertex log", glh::GetShaderInfoLog(hVertexShader));
@@ -359,8 +359,8 @@ void webgl1es2_shader_program::useProgram(gl_state &aState) const {
     aState.use_program(m_ProgramHandle.get());
 }
 
-bool webgl1es2_shader_program::operator==(const webgl1es2_shader_program &b) const {
-    return m_ProgramHandle == b.m_ProgramHandle;
+bool webgl1es2_shader_program::operator==(const webgl1es2_shader_program &aOther) const {
+    return m_ProgramHandle == aOther.m_ProgramHandle;
 }
 
 GLint webgl1es2_shader_program::uniform_location(const std::string_view aName) const {
@@ -547,27 +547,27 @@ bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, con
     return false;
 }
 
-bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const integer2_uniform_type &a) const {
+bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const integer2_uniform_type &aValue) const {
     if (const auto &search = m_ActiveUniforms.find(aName); search != m_ActiveUniforms.end()) {
-        glUniform2i(search->second.location, a.x, a.y);
+        glUniform2i(search->second.location, aValue.x, aValue.y);
         return true;
     }
 
     return false;
 }
 
-bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const integer3_uniform_type &a) const {
+bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const integer3_uniform_type &aValue) const {
     if (const auto &search = m_ActiveUniforms.find(aName); search != m_ActiveUniforms.end()) {
-        glUniform3i(search->second.location, a.x, a.y, a.z);
+        glUniform3i(search->second.location, aValue.x, aValue.y, aValue.z);
         return true;
     }
 
     return false;
 }
 
-bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const integer4_uniform_type &a) const {
+bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const integer4_uniform_type &aValue) const {
     if (const auto &search = m_ActiveUniforms.find(aName); search != m_ActiveUniforms.end()) {
-        glUniform4i(search->second.location, a.x, a.y, a.z, a.w);
+        glUniform4i(search->second.location, aValue.x, aValue.y, aValue.z, aValue.w);
         return true;
     }
 
@@ -648,9 +648,9 @@ bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, con
     return false;
 }
 
-bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const mat3x3_type &a) const {
+bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const mat3x3_type &aValue) const {
     if (const auto& search = m_ActiveUniforms.find(aName); search != m_ActiveUniforms.end()) {
-        auto b = a;
+        auto b = aValue;
         glUniformMatrix3fv(search->second.location, 1, GL_FALSE, &b.front());
         return true;
     }
@@ -658,19 +658,19 @@ bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, con
     return false;
 }
 
-bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const std::vector<mat3x3_type> &a) const {
-    if (!a.size()) return false;
+bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const std::vector<mat3x3_type> &aValue) const {
+    if (!aValue.size()) return false;
 
     if (const auto &search = m_ActiveUniforms.find(aName); search != m_ActiveUniforms.end()) {
         static constexpr auto order(mat3x3_type::order);
 
         std::vector<mat3x3_type::component_type> data;
-        data.reserve(a.size() * order * order);
+        data.reserve(aValue.size() * order * order);
 
-        for (const auto &mat : a) for (std::size_t column(0); column < order; ++column)
+        for (const auto &mat : aValue) for (std::size_t column(0); column < order; ++column)
             for (std::size_t row(0); row < order; ++row) data.push_back(mat.get(column, row));
 
-        glUniformMatrix3fv(search->second.location, static_cast<GLsizei>(a.size()), GL_FALSE, &data[0]);
+        glUniformMatrix3fv(search->second.location, static_cast<GLsizei>(aValue.size()), GL_FALSE, &data[0]);
 
         return true;
     }
@@ -678,9 +678,9 @@ bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, con
     return false;
 }
 
-bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const matrix4x4_type &a) const {
+bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const matrix4x4_type &aTransform) const {
     if (const auto& search = m_ActiveUniforms.find(aName); search != m_ActiveUniforms.end()) {
-        auto b = a;
+        auto b = aTransform;
         glUniformMatrix4fv(search->second.location, 1, GL_FALSE, &b.front());
         return true;
     }
@@ -688,19 +688,19 @@ bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, con
     return false;
 } 
 
-bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const std::vector<matrix4x4_type> &a) const {
-    if (!a.size()) return false;
+bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const std::vector<matrix4x4_type> &aTransform) const {
+    if (!aTransform.size()) return false;
 
     if (const auto &search = m_ActiveUniforms.find(aName); search != m_ActiveUniforms.end()) {
         static constexpr auto order(matrix4x4_type::order);
 
         std::vector<matrix4x4_type::component_type> data;
-        data.reserve(a.size() * order * order);
+        data.reserve(aTransform.size() * order * order);
 
-        for (const auto &mat : a) for (std::size_t column(0); column < order; ++column)
+        for (const auto &mat : aTransform) for (std::size_t column(0); column < order; ++column)
             for (std::size_t row(0); row < order; ++row) data.push_back(mat.get(column, row));
 
-        glUniformMatrix4fv(search->second.location, static_cast<GLsizei>(a.size()), GL_FALSE, &data[0]);
+        glUniformMatrix4fv(search->second.location, static_cast<GLsizei>(aTransform.size()), GL_FALSE, &data[0]);
 
         return true;
     }

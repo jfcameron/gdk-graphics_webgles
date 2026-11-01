@@ -30,7 +30,6 @@ namespace gdk::graphics
         /// \note the view matrix is the inverse of the world matrix
         const matrix4x4_type &get_view_matrix() const;
 
-        /// \brief gets the projection matrix
         const matrix4x4_type &get_projection_matrix() const;
 
         //! whether its projection is orthographic, where near and far is along the view alone
@@ -38,14 +37,11 @@ namespace gdk::graphics
 
     ///@}
         /// \brief copy semantics
-        webgl1es2_camera(const webgl1es2_camera& a) = default;
-        /// \brief copy semantics
-        webgl1es2_camera& operator=(const webgl1es2_camera & a) = default;
+        webgl1es2_camera(const webgl1es2_camera& aOther) = default;
+        webgl1es2_camera& operator=(const webgl1es2_camera & aOther) = default;
 
-        /// \brief move semantics
         webgl1es2_camera(webgl1es2_camera&&) = default;
-        /// \brief move semantics
-        webgl1es2_camera& operator=(webgl1es2_camera && a) = default;
+        webgl1es2_camera& operator=(webgl1es2_camera && aOther) = default;
 
         /// \brief constructs with reasonable default values
         webgl1es2_camera();
@@ -68,7 +64,7 @@ namespace gdk::graphics
             const float aNearClippingPlane, const float aFarClippingPlane,
             const float aViewportAspectRatio);
 
-        void set_clear_color(const gdk::graphics::color& acolor);
+        void set_clear_color(const gdk::graphics::color& aColor);
 
         void set_clear_mode(const gdk::graphics::camera::clear_mode aClearMode);
 
