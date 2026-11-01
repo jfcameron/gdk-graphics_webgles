@@ -54,7 +54,7 @@ namespace gdk::graphics {
         virtual void set_transform(const gdk::graphics::matrix4x4_type &aMatrix) override;
 
         /// \brief sets the clear color, used to fill color buffer after it is cleared.
-        virtual void set_clear_color(const gdk::graphics::color &acolor) override;
+        virtual void set_clear_color(const gdk::graphics::color &aColor) override;
 
         /// \brief clear mode decides which buffers to clear. see enum
         virtual void set_clear_mode(const gdk::graphics::camera::clear_mode aClearMode) override;
@@ -67,15 +67,11 @@ namespace gdk::graphics {
         void activate(const gdk::graphics::intvector2_type& aFrameBufferSize) const;
     ///@}
 
-        /// \brief copy semantics
-        webgl1es2_screen_camera(const webgl1es2_screen_camera& a) = default;
-        /// \brief copy semantics
-        webgl1es2_screen_camera& operator=(const webgl1es2_screen_camera & a) = default;
+        webgl1es2_screen_camera(const webgl1es2_screen_camera& aOther) = default;
+        webgl1es2_screen_camera& operator=(const webgl1es2_screen_camera & aOther) = default;
 
-        /// \brief move semantics
         webgl1es2_screen_camera(webgl1es2_screen_camera&&) = default;
-        /// \brief move semantics
-        webgl1es2_screen_camera& operator=(webgl1es2_screen_camera && a) = default;
+        webgl1es2_screen_camera& operator=(webgl1es2_screen_camera && aOther) = default;
 
         /// \brief constructs with reasonable default values
         webgl1es2_screen_camera();

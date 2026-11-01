@@ -14,8 +14,8 @@ using namespace gdk::graphics;
 
 webgl1es2_camera::webgl1es2_camera() = default;
 
-void webgl1es2_camera::set_clear_color(const gdk::graphics::color& acolor) {
-    m_ClearColor = acolor;
+void webgl1es2_camera::set_clear_color(const gdk::graphics::color& aColor) {
+    m_ClearColor = aColor;
 }
 
 void webgl1es2_camera::set_clear_mode(const camera::clear_mode aClearMode) {

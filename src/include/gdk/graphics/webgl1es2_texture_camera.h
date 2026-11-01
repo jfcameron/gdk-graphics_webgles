@@ -37,7 +37,7 @@ namespace gdk::graphics {
             const float aNearClippingPlane, const float aFarClippingPlane,
             const float aViewportAspectRatio) override;
 
-        virtual void set_clear_color(const gdk::graphics::color& acolor) override;
+        virtual void set_clear_color(const gdk::graphics::color& aColor) override;
 
         virtual void set_clear_mode(const clear_mode aClearMode) override;
 
@@ -72,7 +72,6 @@ namespace gdk::graphics {
         //! handle to an FBO in the context
         jfc::unique_handle<GLuint> m_FrameBufferHandle;
         
-        //! handle to the depth buffer
         jfc::unique_handle<GLuint> m_DepthBuffer;
 
         //! Texture attached to the color buffer

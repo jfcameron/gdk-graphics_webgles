@@ -66,7 +66,7 @@ namespace gdk::graphics {
         /// a pipeline without a programmable vertex shader stage nor a 
         /// programmable fragment shader stage, which is not a valid pipeline
         webgl1es2_material(shader_ptr_type pShader,
-            material::face_culling_mode aface_culling_mode,
+            material::face_culling_mode aFaceCullingMode,
             material::render_mode aRenderMode);
 
         //! trivial destructor

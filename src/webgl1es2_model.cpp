@@ -24,9 +24,9 @@ std::shared_ptr<webgl1es2_model> webgl1es2_model::make_sphere() {
     std::vector<float> normals;
     std::vector<float> uvs;
 
-    auto get_vertex = [&](int lat, int lon) {
-        const float theta = lat * gdk::math::numbers::pi_f / latitudeBands;
-        const float phi = lon * 2.0f * gdk::math::numbers::pi_f / longitudeBands;
+    auto get_vertex = [&](int aLat, int aLon) {
+        const float theta = aLat * gdk::math::numbers::pi_f / latitudeBands;
+        const float phi = aLon * 2.0f * gdk::math::numbers::pi_f / longitudeBands;
 
         const float sinTheta = std::sin(theta);
         const float cosTheta = std::cos(theta);
@@ -37,8 +37,8 @@ std::shared_ptr<webgl1es2_model> webgl1es2_model::make_sphere() {
         const float y = cosTheta;
         const float z = sinPhi * sinTheta;
 
-        const float u = 1.0f - (float(lon) / longitudeBands);
-        const float v = 1.0f - (float(lat) / latitudeBands);
+        const float u = 1.0f - (float(aLon) / longitudeBands);
+        const float v = 1.0f - (float(aLat) / latitudeBands);
 
         positions.push_back(radius * x);
         positions.push_back(radius * y);
@@ -227,42 +227,42 @@ static inline GLenum vertexDataPrimitiveMode_to_wegl1es2ModelPrimitiveMode(const
 }
 
 static inline void update_index_data(
-    jfc::unique_handle<GLuint> &handle,
-    size_t index_count, 
+    jfc::unique_handle<GLuint> &aHandle,
+    size_t aIndexCount, 
     const GLushort *pIndexBegin, 
-    GLenum ausage_hint,
-    GLsizei &m_IndexCount) {
-    m_IndexCount = static_cast<GLsizei>(index_count);
+    GLenum aUsageHint,
+    GLsizei &aMIndexCount) {
+    aMIndexCount = static_cast<GLsizei>(aIndexCount);
 
-    if (m_IndexCount > 0) {
-        if (!handle) {
-            handle.reset([&]() {
+    if (aMIndexCount > 0) {
+        if (!aHandle) {
+            aHandle.reset([&]() {
                 GLuint ibo(0);
                 
                 glGenBuffers(1, &ibo);
                 
                 return ibo;
             }(),
-            [](const GLuint handle) {
-                glDeleteBuffers(1, &handle);
+            [](const GLuint aHandle) {
+                glDeleteBuffers(1, &aHandle);
             });
         }
 
-        GLuint ibo = handle.get();
+        GLuint ibo = aHandle.get();
             
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
                 
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
-            sizeof(GLushort) * index_count, 
+            sizeof(GLushort) * aIndexCount, 
             pIndexBegin, 
-            ausage_hint);
+            aUsageHint);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
         if (const auto error = glh::GetError()) 
             throw exception(std::string(TAG).append(*error));
     }
-    else handle.reset();
+    else aHandle.reset();
 }
 
 void webgl1es2_model::bind(const webgl1es2_shader_program &aShaderProgram) const {
@@ -299,7 +299,7 @@ void webgl1es2_model::bind(const webgl1es2_shader_program &aShaderProgram) const
         glVertexAttribPointer(
             each.location,
             each.components,
-            GL_FLOAT, //TODO: supporting smaller data types would be a good optimization for attributes that do not need the range or precision of floats
+            GL_FLOAT,
             GL_FALSE,
             0,
             0
@@ -400,8 +400,8 @@ void webgl1es2_model::upload(const usage_hint &aUsage,
 
                     return vbo;
                 }(),
-                [](const GLuint handle) {
-                    glDeleteBuffers(1, &handle);
+                [](const GLuint aHandle) {
+                    glDeleteBuffers(1, &aHandle);
                 }});
             }
         }

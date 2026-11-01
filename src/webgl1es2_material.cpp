@@ -7,14 +7,14 @@
 using namespace gdk;
 using namespace gdk::graphics;
 
-static inline void setface_culling_mode(const material::face_culling_mode a) {
-    if (a == material::face_culling_mode::none) {
+static inline void setface_culling_mode(const material::face_culling_mode aMode) {
+    if (aMode == material::face_culling_mode::none) {
         glDisable(GL_CULL_FACE);
         return;
     }
 
     glEnable(GL_CULL_FACE);
-    switch(a) {
+    switch(aMode) {
         case material::face_culling_mode::front: glCullFace(GL_FRONT); return;
         case material::face_culling_mode::back: glCullFace(GL_BACK); return;
         case material::face_culling_mode::front_and_back: glCullFace(GL_FRONT_AND_BACK); return;
@@ -43,10 +43,10 @@ static inline void setRenderMode(const material::render_mode aRenderMode) {
 }
 
 webgl1es2_material::webgl1es2_material(shader_ptr_type pShader,
-    material::face_culling_mode aface_culling_mode,
+    material::face_culling_mode aFaceCullingMode,
     material::render_mode aRenderMode)
 : m_pShaderProgram(pShader)
-, m_FaceCullMode(aface_culling_mode)
+, m_FaceCullMode(aFaceCullingMode)
 , m_RenderMode(aRenderMode)
 {
     if (m_pShaderProgram) assign(m_vector4s, "_Color", vector4_type(1, 1, 1, 1));

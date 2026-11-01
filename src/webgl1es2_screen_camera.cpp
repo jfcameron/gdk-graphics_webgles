@@ -78,8 +78,8 @@ void webgl1es2_screen_camera::set_orthographic_projection(const gdk::graphics::v
         aFarClippingPlane, aViewportAspectRatio);
 }
 
-void webgl1es2_screen_camera::set_clear_color(const gdk::graphics::color& acolor) {
-     webgl1es2_camera::set_clear_color(acolor);
+void webgl1es2_screen_camera::set_clear_color(const gdk::graphics::color& aColor) {
+     webgl1es2_camera::set_clear_color(aColor);
 }
 
 void webgl1es2_screen_camera::set_clear_mode(const gdk::graphics::camera::clear_mode aClearMode) {

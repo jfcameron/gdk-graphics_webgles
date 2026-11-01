@@ -40,8 +40,8 @@ webgl1es2_texture_camera::webgl1es2_texture_camera(const intvector2_type &aTextu
 
     return handle;
 }(),
-[](GLuint handle) {
-    glDeleteFramebuffers(1, &handle);
+[](GLuint aHandle) {
+    glDeleteFramebuffers(1, &aHandle);
 })
 , m_DepthBuffer([&]() {
     GLuint handle;
@@ -58,8 +58,8 @@ webgl1es2_texture_camera::webgl1es2_texture_camera(const intvector2_type &aTextu
 
     return handle;
 }(),
-[](GLuint handle) {
-    glDeleteRenderbuffers(1, &handle);
+[](GLuint aHandle) {
+    glDeleteRenderbuffers(1, &aHandle);
 })
 , m_pColorTexture(std::make_shared<webgl1es2_texture>(texture_data::view{
         .width = static_cast<std::size_t>(aTextureSize.x),
@@ -94,8 +94,8 @@ void webgl1es2_texture_camera::set_orthographic_projection(const gdk::graphics::
         aFarClippingPlane, aViewportAspectRatio);
 }
 
-void webgl1es2_texture_camera::set_clear_color(const gdk::graphics::color& acolor) {
-    webgl1es2_camera::set_clear_color(acolor);
+void webgl1es2_texture_camera::set_clear_color(const gdk::graphics::color& aColor) {
+    webgl1es2_camera::set_clear_color(aColor);
 }
 
 void webgl1es2_texture_camera::set_clear_mode(const clear_mode aClearMode) {

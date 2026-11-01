@@ -29,8 +29,8 @@ using namespace gdk;
 using namespace gdk::graphics;
 
 
-static inline webgl1es2_texture::format textureFormatToWebGL1ES2TextureFormat(const texture::format a) {
-    switch(a) {
+static inline webgl1es2_texture::format textureFormatToWebGL1ES2TextureFormat(const texture::format aValue) {
+    switch(aValue) {
         case texture::format::grey: return webgl1es2_texture::format::alpha;
         case texture::format::rg: return webgl1es2_texture::format::luminance_alpha;
         case texture::format::rgb: return webgl1es2_texture::format::rgb;
@@ -39,8 +39,8 @@ static inline webgl1es2_texture::format textureFormatToWebGL1ES2TextureFormat(co
     throw exception("unhandled format type");
 }
 
-static inline GLint webGL1ES2TextureFormatToToGLint(const webgl1es2_texture::format a) {
-    switch(a) {
+static inline GLint webGL1ES2TextureFormatToToGLint(const webgl1es2_texture::format aValue) {
+    switch(aValue) {
         case webgl1es2_texture::format::depth: {
 #if GDK_GRAPHICS_GLES
             const auto *const pExtensions = reinterpret_cast<const char *>(glGetString(GL_EXTENSIONS));
@@ -63,8 +63,8 @@ static inline GLint webGL1ES2TextureFormatToToGLint(const webgl1es2_texture::for
 }
 
 //! the interface's name for a format a patch can be in, or none for depth, which takes none
-static inline std::optional<texture::format> interface_format_of(const webgl1es2_texture::format a) {
-    switch (a) {
+static inline std::optional<texture::format> interface_format_of(const webgl1es2_texture::format aValue) {
+    switch (aValue) {
         case webgl1es2_texture::format::alpha: return texture::format::grey;
         case webgl1es2_texture::format::luminance_alpha: return texture::format::rg;
         case webgl1es2_texture::format::rgb: return texture::format::rgb;
@@ -75,8 +75,8 @@ static inline std::optional<texture::format> interface_format_of(const webgl1es2
     return std::nullopt;
 }
 
-static inline GLint minification_filter_to_glint(const webgl1es2_texture::minification_filter a) {
-    switch(a) {
+static inline GLint minification_filter_to_glint(const webgl1es2_texture::minification_filter aValue) {
+    switch(aValue) {
         case webgl1es2_texture::minification_filter::linear: return GL_LINEAR;
         case webgl1es2_texture::minification_filter::nearest: return GL_NEAREST;
         case webgl1es2_texture::minification_filter::nearest_mipmap_nearest: return GL_NEAREST_MIPMAP_NEAREST;
@@ -87,8 +87,8 @@ static inline GLint minification_filter_to_glint(const webgl1es2_texture::minifi
     throw exception("unhandled minification filter");
 }
 
-static inline GLint magnification_filter_to_glint(const webgl1es2_texture::magnification_filter a) {
-    switch(a) {
+static inline GLint magnification_filter_to_glint(const webgl1es2_texture::magnification_filter aValue) {
+    switch(aValue) {
         case webgl1es2_texture::magnification_filter::linear: return GL_LINEAR;
         case webgl1es2_texture::magnification_filter::nearest: return GL_NEAREST;
     }
@@ -99,8 +99,8 @@ static inline void unpack_rows_as_packed() {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 }
 
-static inline GLint wrap_mode_to_glint(const texture::wrap_mode a) {
-    switch(a) {
+static inline GLint wrap_mode_to_glint(const texture::wrap_mode aValue) {
+    switch(aValue) {
         case texture::wrap_mode::clamped: return GL_CLAMP_TO_EDGE;
         case texture::wrap_mode::repeat: return GL_REPEAT;
         case texture::wrap_mode::mirrored: return GL_MIRRORED_REPEAT;
@@ -137,8 +137,8 @@ webgl1es2_texture::webgl1es2_texture(
     const texture_data::view &aTextureView,
     const wrap_mode aWrapModeU, 
     const wrap_mode aWrapModeV,
-    const minification_filter minFilter,
-    const magnification_filter magFilter)
+    const minification_filter aMinFilter,
+    const magnification_filter aMagFilter)
 : webgl1es2_texture(
     textureFormatToWebGL1ES2TextureFormat(aTextureView.format),
     aTextureView.width,
@@ -146,8 +146,8 @@ webgl1es2_texture::webgl1es2_texture(
     aTextureView.data,
     aWrapModeU,
     aWrapModeV,
-    minFilter,
-    magFilter) 
+    aMinFilter,
+    aMagFilter) 
 {}
 
 static inline bool samples_mipmaps(const webgl1es2_texture::minification_filter aFilter) {
@@ -181,14 +181,14 @@ webgl1es2_texture::webgl1es2_texture(
     const texture_data::channel_type *aData,
     const wrap_mode aWrapModeU,
     const wrap_mode aWrapModeV,
-    const minification_filter minFilter,
-    const magnification_filter magFilter)
+    const minification_filter aMinFilter,
+    const magnification_filter aMagFilter)
 : m_WrapU(aWrapModeU)
 , m_WrapV(aWrapModeV)
-, m_HasMipmaps(samples_mipmaps(minFilter))
+, m_HasMipmaps(samples_mipmaps(aMinFilter))
 , m_Handle([&]() {
     validate_texture_size(aWidthInTexels, aHeightInTexels,
-        any_size_allowed(aWrapModeU, aWrapModeV, samples_mipmaps(minFilter)));
+        any_size_allowed(aWrapModeU, aWrapModeV, samples_mipmaps(aMinFilter)));
 
     GLuint handle;
     glGenTextures(1, &handle);
@@ -209,21 +209,21 @@ webgl1es2_texture::webgl1es2_texture(
         aFormat == webgl1es2_texture::format::depth ? GL_UNSIGNED_INT : GL_UNSIGNED_BYTE,
         reinterpret_cast<const GLubyte *>(aData));
 
-    if (samples_mipmaps(minFilter)) glGenerateMipmap(GL_TEXTURE_2D);
+    if (samples_mipmaps(aMinFilter)) glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
-        magnification_filter_to_glint(magFilter));
+        magnification_filter_to_glint(aMagFilter));
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-        minification_filter_to_glint(minFilter));
+        minification_filter_to_glint(aMinFilter));
    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_mode_to_glint(aWrapModeU));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_mode_to_glint(aWrapModeV));
 
     return handle;
 }(),
-[](const GLuint handle) {
-    glDeleteTextures(1, &handle);
+[](const GLuint aHandle) {
+    glDeleteTextures(1, &aHandle);
 })
 , m_CurrentDataWidth(aWidthInTexels)
 , m_CurrentDataHeight(aHeightInTexels)
@@ -242,53 +242,53 @@ void webgl1es2_texture::activateAndBind(const GLint aUnit) const {
 
 void webgl1es2_texture::hold_to(std::shared_ptr<const profile> pProfile) { m_pProfile = std::move(pProfile); }
 
-void webgl1es2_texture::update_data(const texture_data::view &imageView) {
+void webgl1es2_texture::update_data(const texture_data::view &aImageView) {
     const auto anySize = any_size_allowed(m_WrapU, m_WrapV, m_HasMipmaps);
 
-    if (m_pProfile) check_texture(*m_pProfile, imageView.width, imageView.height, anySize);
+    if (m_pProfile) check_texture(*m_pProfile, aImageView.width, aImageView.height, anySize);
 
-    validate_texture_size(imageView.width, imageView.height, anySize);
+    validate_texture_size(aImageView.width, aImageView.height, anySize);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_Handle.get());
 
-    auto format = webGL1ES2TextureFormatToToGLint(textureFormatToWebGL1ES2TextureFormat(imageView.format));
+    auto format = webGL1ES2TextureFormatToToGLint(textureFormatToWebGL1ES2TextureFormat(aImageView.format));
 
     unpack_rows_as_packed();
     glTexImage2D(GL_TEXTURE_2D, 
         0, 
         format,
-        static_cast<GLsizei>(imageView.width), 
-        static_cast<GLsizei>(imageView.height), 
+        static_cast<GLsizei>(aImageView.width), 
+        static_cast<GLsizei>(aImageView.height), 
         0, 
         format,
         GL_UNSIGNED_BYTE, 
-        reinterpret_cast<const GLubyte *>(imageView.data));
+        reinterpret_cast<const GLubyte *>(aImageView.data));
 
     if (m_HasMipmaps) glGenerateMipmap(GL_TEXTURE_2D);
 
     m_CurrentDataFormat = format;
-    m_CurrentDataWidth = imageView.width;
-    m_CurrentDataHeight = imageView.height;
-    m_Format = imageView.format;
+    m_CurrentDataWidth = aImageView.width;
+    m_CurrentDataHeight = aImageView.height;
+    m_Format = aImageView.format;
 }
 
-void webgl1es2_texture::update_data(const texture_data::view &imageView, 
-    const size_t offsetX, const size_t offsetY) {
-    check_patch(imageView, offsetX, offsetY, m_CurrentDataWidth, m_CurrentDataHeight, m_Format);
+void webgl1es2_texture::update_data(const texture_data::view &aImageView, 
+    const size_t aOffsetX, const size_t aOffsetY) {
+    check_patch(aImageView, aOffsetX, aOffsetY, m_CurrentDataWidth, m_CurrentDataHeight, m_Format);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_Handle.get());
     unpack_rows_as_packed();
     glTexSubImage2D(GL_TEXTURE_2D, 
         0, 
-        static_cast<GLint>(offsetX),
-        static_cast<GLint>(offsetY),
-        static_cast<GLsizei>(imageView.width), 
-        static_cast<GLsizei>(imageView.height), 
+        static_cast<GLint>(aOffsetX),
+        static_cast<GLint>(aOffsetY),
+        static_cast<GLsizei>(aImageView.width), 
+        static_cast<GLsizei>(aImageView.height), 
         m_CurrentDataFormat,
         GL_UNSIGNED_BYTE, 
-        reinterpret_cast<const GLubyte *>(imageView.data));
+        reinterpret_cast<const GLubyte *>(aImageView.data));
 
     if (m_HasMipmaps) glGenerateMipmap(GL_TEXTURE_2D);
 }
@@ -375,5 +375,5 @@ void webgl1es2_texture::adopt(const egl_image_type apImage, const std::size_t aW
 }
 #endif
 
-bool webgl1es2_texture::operator==(const webgl1es2_texture &b) const { return m_Handle == b.m_Handle; }
+bool webgl1es2_texture::operator==(const webgl1es2_texture &aOther) const { return m_Handle == aOther.m_Handle; }
 

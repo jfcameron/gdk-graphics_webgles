@@ -42,7 +42,7 @@ namespace gdk::graphics
             const quaternion_type &aRotation,
             const vector3_type &aScale) override;
 
-        virtual void set_transform(const matrix4x4_type& a) override;
+        virtual void set_transform(const matrix4x4_type& aTransform) override;
 
         virtual void set_bounds(const vector3_type &aCentre, floating_point_type aRadius) override;
     ///@}
@@ -50,10 +50,8 @@ namespace gdk::graphics
         /// \brief this entity's bounding sphere in world space, used for culling
         void world_bounds(vector3_type &aCentreOut, floating_point_type &aRadiusOut) const;
 
-        //! get the model
         const std::shared_ptr<webgl1es2_model> &getModel() const;
 
-        //! get the material
         const std::shared_ptr<webgl1es2_material> &getMaterial() const;
 
         /// \brief draws the webgl1es2_entity at its current world position, with respect to a view and projection matrix.
@@ -66,14 +64,10 @@ namespace gdk::graphics
         /// \brief returns a const ref to the model matrix
         const matrix4x4_type &getModelMatrix() const;
 
-        /// \brief copy semantics
         webgl1es2_entity(const webgl1es2_entity &) = default;
-        /// \brief copy semantics
         webgl1es2_entity &operator=(const webgl1es2_entity &) = default;
 
-        /// \brief move semantics
         webgl1es2_entity(webgl1es2_entity &&) = default;
-        /// \brief move semantics
         webgl1es2_entity &operator=(webgl1es2_entity &&) = default;
 
         //! standard constructor. requires a model and a material

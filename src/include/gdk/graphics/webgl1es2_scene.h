@@ -48,7 +48,7 @@ namespace gdk::graphics {
         /// rather than per entity
         ///
         /// `aUniforms` go up before each material's own, so a material's value for a name wins
-        virtual void draw(const webgl1es2_camera *r, gl_state &aState,
+        virtual void draw(const webgl1es2_camera *apCamera, gl_state &aState,
             const frustum &aFrustum, const matrix4x4_type &aViewProjection,
             const scene_uniforms &aUniforms) const;
 
@@ -79,7 +79,7 @@ namespace gdk::graphics {
 
     class sorted_render_set final : public render_set {
     public:
-        virtual void draw(const webgl1es2_camera *r, gl_state &aState,
+        virtual void draw(const webgl1es2_camera *apCamera, gl_state &aState,
             const frustum &aFrustum, const matrix4x4_type &aViewProjection,
             const scene_uniforms &aUniforms) const override;
 
