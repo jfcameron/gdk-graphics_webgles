@@ -79,6 +79,7 @@ void webgl1es2_material::activate(gl_state &aState) {
     upload(m_vector4s);
 
     upload(m_IntVector2Arrays);
+    upload(m_Vector4Arrays);
 
     for (const auto &[name, pTexture] : m_Textures) m_pShaderProgram->try_set_uniform(name, *pTexture, aState);
 }
@@ -141,3 +142,13 @@ void webgl1es2_material::set_int_vector2_array(const std::string_view aName, con
     assign(m_IntVector2Arrays, aName, aValue);
 }
 
+void webgl1es2_material::set_vector4_array(const std::string_view aName, const std::span<const vector4_type> aValue) {
+    auto found = m_Vector4Arrays.find(aName);
+
+    if (found == m_Vector4Arrays.end()) {
+        found = m_Vector4Arrays.emplace(aName, uniform<std::vector<vector4_type>>{}).first;
+        found->second.location = m_pShaderProgram->uniform_location(found->first);
+    }
+
+    found->second.value.assign(aValue.begin(), aValue.end());
+}

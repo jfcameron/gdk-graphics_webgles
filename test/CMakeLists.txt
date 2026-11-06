@@ -5,9 +5,11 @@ jfc_add_tests(
 
     TEST_SOURCE_FILES
         "${CMAKE_CURRENT_LIST_DIR}/profile_test.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/ext/skinning_test.cpp"
 
     LIBRARIES
-        gdkgraphics_webgles_profile)
+        gdkgraphics_webgles_profile
+        gdkgraphics_webgles_skinning)
 
 set_property(TARGET ${JFC_TEST_TARGET} PROPERTY CXX_EXTENSIONS OFF)
 
@@ -24,6 +26,7 @@ if (TARGET gdkwindowing_glfw)
             "${CMAKE_CURRENT_LIST_DIR}/regression_test.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/scene_test.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/shader_program_test.cpp"
+            "${CMAKE_CURRENT_LIST_DIR}/ext/skinned_draw_test.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/texture3d_test.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/texture_test.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/webgles_conformance.cpp"
@@ -33,6 +36,7 @@ if (TARGET gdkwindowing_glfw)
 
         LIBRARIES
             gdkgraphics_webgles_private
+            gdkgraphics_webgles_skinning
             gdkgraphics_conformance
             gdkwindowing_glfw)
 

@@ -69,6 +69,21 @@ include(CMakePackageConfigHelpers)
 
 add_subdirectory(profile)
 
+add_library(gdkgraphics_webgles_skinning STATIC "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/webgl1es2_skinning.cpp")
+
+add_library(gdk::graphics_webgles_skinning ALIAS gdkgraphics_webgles_skinning)
+
+set_target_properties(gdkgraphics_webgles_skinning PROPERTIES EXPORT_NAME graphics_webgles_skinning PREFIX "lib")
+
+target_include_directories(gdkgraphics_webgles_skinning
+    PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+target_compile_features(gdkgraphics_webgles_skinning PUBLIC cxx_std_20)
+
+target_link_libraries(gdkgraphics_webgles_skinning PUBLIC gdkgraphics)
+
 add_library(gdkgraphics_webgles STATIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src/glh.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/webgl1es2_camera.cpp"
@@ -160,7 +175,7 @@ target_link_libraries(gdkgraphics_webgles_private INTERFACE
     $<$<TARGET_EXISTS:OpenGL::GL>:OpenGL::GL>)
 
 if (GDKGRAPHICS_WEBGLES_INSTALL)
-    set(_gdkgraphics_webgles_installed gdkgraphics_webgles gdkgraphics_webgles_profile)
+    set(_gdkgraphics_webgles_installed gdkgraphics_webgles gdkgraphics_webgles_profile gdkgraphics_webgles_skinning)
 
     if (GDKGRAPHICS_WEBGLES_USES_GLEW AND GDKGRAPHICS_WEBGLES_VENDORED_GLEW)
         list(APPEND _gdkgraphics_webgles_installed GLEW)

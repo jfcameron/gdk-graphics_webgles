@@ -8,6 +8,6 @@ find_package(gdk-graphics_webgles 1 REQUIRED)
 
 add_executable(consumer main.cpp)
 
-target_link_libraries(consumer PRIVATE gdk::graphics_webgles)
+target_link_libraries(consumer PRIVATE gdk::graphics_webgles gdk::graphics_webgles_skinning)
 
 set_target_properties(consumer PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<0:>")
