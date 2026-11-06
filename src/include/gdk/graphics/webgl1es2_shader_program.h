@@ -85,6 +85,8 @@ namespace gdk::graphics {
         //! an ivec2 array. An empty one names no elements and is skipped
         void set_uniform(const GLint aLocation,
             std::span<const integer2_uniform_type> aValue) const;
+        //! a vec4 array from its first element. An empty one names no elements and is skipped
+        void set_uniform(const GLint aLocation, std::span<const vector4_type> aValue) const;
         ///@}
 
         bool try_set_uniform(const std::string_view aName, const GLfloat aValue) const;

@@ -10,7 +10,9 @@
 
 #include <array>
 #include <optional>
+#include <span>
 #include <unordered_map>
+#include <vector>
 
 namespace gdk::graphics {
     class webgl1es2_material : public material {
@@ -32,6 +34,7 @@ namespace gdk::graphics {
         virtual void set_integer4(const std::string_view aName, int aValue1, int aValue2, int aValue3, int aValue4) override;
 
         virtual void set_int_vector2_array(const std::string_view aName, const std::vector<intvector2_type> &aValue) override;
+        virtual void set_vector4_array(const std::string_view aName, std::span<const vector4_type> aValue) override;
     ///@}
         
         //! shaders can be shared among many webgl1es2_materials
@@ -124,6 +127,7 @@ namespace gdk::graphics {
         string_keyed<uniform<intvector3_type>> m_Integer3s;
         string_keyed<uniform<intvector4_type>> m_Integer4s;
         string_keyed<uniform<std::vector<intvector2_type>>> m_IntVector2Arrays;
+        string_keyed<uniform<std::vector<vector4_type>>> m_Vector4Arrays;
     };
 }
 

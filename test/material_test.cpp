@@ -17,6 +17,7 @@
 
 #include <array>
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -270,12 +271,14 @@ TEST_CASE("**activating a material puts its uniform values into gl**",
     uniform vec4 _Vec4;
     uniform int _Int;
     uniform ivec2 _IVec2Array[3];
+    uniform vec4 _Vec4Array[3];
     attribute highp vec3 a_Position;
 
     void main() {
         gl_Position = vec4(a_Position, 1.0) * _Float * float(_Int)
             * vec4(_Vec2, 0.0, 0.0) * _Vec4
-            * float(_IVec2Array[0].x + _IVec2Array[1].y + _IVec2Array[2].x);
+            * float(_IVec2Array[0].x + _IVec2Array[1].y + _IVec2Array[2].x)
+            * (_Vec4Array[0] + _Vec4Array[1] + _Vec4Array[2]);
     }
     )V0G0N");
 
@@ -378,6 +381,46 @@ TEST_CASE("**activating a material puts its uniform values into gl**",
         subject.set_int_vector2_array("_IVec2Array", {});
         subject.activate(test_gl_state());
 
+        REQUIRE(!webgles_test::glGetError());
+    }
+
+    SECTION("**a vec4 array arrives from its first element, the material keeping its own copy, and what is past the "
+        "array's end is ignored**")
+    {
+        GLint current = 0;
+        glGetIntegerv(GL_CURRENT_PROGRAM, &current);
+
+        const auto element = [&](const std::size_t aIndex) {
+            const auto name = std::string("_Vec4Array[").append(std::to_string(aIndex)).append("]");
+
+            std::vector<GLfloat> out(4, -1);
+
+            glGetUniformfv(current, glGetUniformLocation(current, name.c_str()), &out.front());
+
+            return out;
+        };
+
+        std::vector<vector4_type> rows{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
+
+        subject.set_vector4_array("_Vec4Array", rows);
+        rows[0].x = 99;
+        subject.activate(test_gl_state());
+
+        REQUIRE(element(0) == std::vector<GLfloat>{1, 2, 3, 4});
+        REQUIRE(element(1) == std::vector<GLfloat>{5, 6, 7, 8});
+        REQUIRE(element(2) == std::vector<GLfloat>{9, 10, 11, 12});
+        REQUIRE(!webgles_test::glGetError());
+
+        subject.set_vector4_array("_Vec4Array", std::span<const vector4_type>(rows).first(1));
+        subject.activate(test_gl_state());
+
+        REQUIRE(element(0) == std::vector<GLfloat>{99, 2, 3, 4});
+        REQUIRE(element(1) == std::vector<GLfloat>{5, 6, 7, 8});
+
+        subject.set_vector4_array("_Vec4Array", {});
+        subject.activate(test_gl_state());
+
+        REQUIRE(element(0) == std::vector<GLfloat>{99, 2, 3, 4});
         REQUIRE(!webgles_test::glGetError());
     }
 }

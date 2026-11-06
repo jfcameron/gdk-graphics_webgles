@@ -20,7 +20,7 @@ ctest --preset linux-gcc
 ```
 Without a display, `xvfb-run -a ctest --preset linux-gcc` runs them on a virtual one, with Mesa's software rasteriser. See `CMakePresets.json` for the full list of supported platforms and compilers. See `.github/workflows/ci.yml` to see how CI runners build it on different platforms.
 
-To use it from another project, add it with `add_subdirectory` and link `gdk::graphics_webgles`, or install it and `find_package(gdk-graphics_webgles)`. `gdk::graphics_webgles_profile` alone gives the ES 2 and WebGL 1 profiles and the shader check, without GL.
+To use it from another project, add it with `add_subdirectory` and link `gdk::graphics_webgles`, or install it and `find_package(gdk-graphics_webgles)`. `gdk::graphics_webgles_profile` alone gives the ES 2 and WebGL 1 profiles and the shader check, without GL; `gdk::graphics_webgles_skinning` alone gives skinning in a vertex shader, without GL.
 
 ## Using it
 `webgl1es2_context::make` makes a context in the GL context current on the calling thread. Everything made from it is used there, with that context current: nothing is thread-safe.
@@ -30,6 +30,19 @@ Beyond the interface, the context offers:
 - `take_counts`, the draws and program changes since it was last asked;
 - `update_from`, in the browser, which draws a VideoFrame, an image or a canvas into a texture on the GPU;
 - `adopt`, where GL's context is EGL's, which samples an EGLImage, a hardware decoder's frame say, in place.
+
+### Skinning
+A skinned mesh is posed in its vertex shader (`ext/webgl1es2_skinning.h`, namespace `gdk::graphics::ext`), linked as `gdk::graphics_webgles_skinning`, which needs no GL. `es2_skinning(bones)` is GLSL ES 1.00 for the start of one: the attributes `a_Joints` (a vertex's two bones) and `a_Weight` (how much the first moves it), the uniform array `_Bones` (each bone's matrix as its top three rows, so three vec4s a bone), and `skinning()`, the vertex's matrix:
+
+```glsl
+// es2_skinning(16) goes here
+attribute highp vec3 a_Position;
+uniform highp mat4 _MVP;
+
+void main() { gl_Position = _MVP * skinning() * vec4(a_Position, 1.0); }
+```
+
+Each frame its material takes the palette, `set_vector4_array(ES2_BONES, es2_bone_rows(palette))`. WebGL 1 promises only 128 vertex uniform vectors, so `es2_most_bones(profile, others)` says how many bones fit beside a shader's other uniforms: 40 beside two matrices.
 
 On desktop GL, shaders are GLSL 1.10, with the ES precision qualifiers defined away: a context of the core profile cannot run them. Ask GLFW, or whatever makes the window, for a compatibility context, which is its default.
 

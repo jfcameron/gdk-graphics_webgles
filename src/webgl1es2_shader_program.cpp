@@ -423,6 +423,23 @@ void webgl1es2_shader_program::set_uniform(const GLint aLocation,
     glUniform2iv(aLocation, static_cast<GLsizei>(aValue.size()), data.data());
 }
 
+void webgl1es2_shader_program::set_uniform(const GLint aLocation, std::span<const vector4_type> aValue) const {
+    if (aLocation == -1 || aValue.empty()) return;
+
+    std::vector<vector4_type::component_type> data;
+
+    data.reserve(aValue.size() * 4);
+
+    for (const auto &each : aValue) {
+        data.push_back(each.x);
+        data.push_back(each.y);
+        data.push_back(each.z);
+        data.push_back(each.w);
+    }
+
+    glUniform4fv(aLocation, static_cast<GLsizei>(aValue.size()), data.data());
+}
+
 bool webgl1es2_shader_program::try_set_uniform(const std::string_view aName, const GLfloat aValue) const {
     if (const auto &search = m_ActiveUniforms.find(aName); search != m_ActiveUniforms.end()) {
         glUniform1f(search->second.location, aValue);
