@@ -28,6 +28,7 @@ namespace gdk::graphics {
         string_keyed<vector3_type> vector3s;
         string_keyed<vector4_type> vector4s;
         string_keyed<int> integers;
+        string_keyed<std::vector<vector4_type>> vector4_arrays;
     };
 
     /// \brief set of objects to render grouped so that gl state changes as little as possible
@@ -112,6 +113,7 @@ namespace gdk::graphics {
         virtual void set_vector4(const std::string_view aName, vector4_type aValue) override;
         virtual void set_vector4(const std::string_view aName, const color &aValue) override;
         virtual void set_integer(const std::string_view aName, int aValue) override;
+        virtual void set_vector4_array(const std::string_view aName, std::span<const vector4_type> aValue) override;
     ///@}
 
     private:

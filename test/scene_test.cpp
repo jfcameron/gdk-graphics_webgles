@@ -707,3 +707,64 @@ TEST_CASE("**a scene's uniforms reach every material it draws, and a material's 
         REQUIRE(!webgles_test::glGetError());
     }
 }
+
+TEST_CASE("**a scene's vec4 array reaches every material it draws, what is past its end ignored, and a material's "
+    "own wins**", "[gdk::webgl1es2_scene]")
+{
+    initGL();
+
+    const auto pShader = std::make_shared<webgl1es2_shader_program>(R"V0G0N(
+    uniform mat4 _MVP;
+    uniform vec4 _Shadows[3];
+    attribute highp vec3 a_Position;
+
+    void main() {
+        gl_Position = _MVP * vec4(a_Position, 1.0) + _Shadows[0] + _Shadows[1] + _Shadows[2];
+    }
+    )V0G0N", R"V0G0N(
+    void main() { gl_FragColor = vec4(1.0); }
+    )V0G0N");
+
+    const auto pMaterial = std::make_shared<webgl1es2_material>(pShader, material::face_culling_mode::none,
+        material::render_mode::opaque);
+
+    webgl1es2_scene scene(std::make_shared<gl_state>());
+
+    const auto pEntity = an_entity(pMaterial, {0, 0, -10});
+    const auto pCamera = a_camera();
+
+    scene.add(pEntity);
+    scene.add(pCamera);
+
+    const auto element = [&pShader](const std::size_t aIndex) {
+        const auto name = std::string("_Shadows[").append(std::to_string(aIndex)).append("]");
+
+        std::vector<GLfloat> out(4, -1);
+
+        glGetUniformfv(pShader->handle(), glGetUniformLocation(pShader->handle(), name.c_str()), &out.front());
+
+        return out;
+    };
+
+    std::vector<vector4_type> shadows{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
+
+    scene.set_vector4_array("_Shadows", shadows);
+    shadows[0].x = 99;
+    scene.draw(FRAME_BUFFER_SIZE);
+
+    REQUIRE(element(0) == std::vector<GLfloat>{1, 2, 3, 4});
+    REQUIRE(element(1) == std::vector<GLfloat>{5, 6, 7, 8});
+    REQUIRE(element(2) == std::vector<GLfloat>{9, 10, 11, 12});
+    REQUIRE(!webgles_test::glGetError());
+
+    SECTION("**a material's own array for the name wins over the scene's**") {
+        const std::vector<vector4_type> own{{-1, -2, -3, -4}};
+
+        pMaterial->set_vector4_array("_Shadows", own);
+        scene.draw(FRAME_BUFFER_SIZE);
+
+        REQUIRE(element(0) == std::vector<GLfloat>{-1, -2, -3, -4});
+        REQUIRE(element(1) == std::vector<GLfloat>{5, 6, 7, 8});
+        REQUIRE(!webgles_test::glGetError());
+    }
+}

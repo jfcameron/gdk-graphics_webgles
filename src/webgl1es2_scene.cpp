@@ -146,6 +146,7 @@ void scene_uniforms::apply(const webgl1es2_shader_program &aProgram) const {
     upload(vector3s);
     upload(vector4s);
     upload(integers);
+    upload(vector4_arrays);
 }
 
 namespace {
@@ -360,6 +361,10 @@ void webgl1es2_scene::set_vector4(const std::string_view aName, const color &aVa
 
 void webgl1es2_scene::set_integer(const std::string_view aName, int aValue) {
     m_Uniforms.integers[std::string(aName)] = aValue;
+}
+
+void webgl1es2_scene::set_vector4_array(const std::string_view aName, const std::span<const vector4_type> aValue) {
+    m_Uniforms.vector4_arrays[std::string(aName)].assign(aValue.begin(), aValue.end());
 }
 
 webgl1es2_scene::webgl1es2_scene(std::shared_ptr<gl_state> apState)
