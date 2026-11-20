@@ -57,6 +57,7 @@ material::render_mode webgl1es2_material::get_render_mode() const {
 }
 
 void webgl1es2_material::activate(gl_state &aState) {
+    aState.count_material();
     setface_culling_mode(m_FaceCullMode);
     setRenderMode(m_RenderMode);
     m_pShaderProgram->useProgram(aState);

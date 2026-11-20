@@ -221,6 +221,31 @@ TEST_CASE("gdk::webgl1es2_scene camera membership", "[gdk::webgl1es2_scene]")
     }
 }
 
+TEST_CASE("additive groups report material activations and reset their counts between passes", "[gdk::webgl1es2_scene]") {
+    initGL();
+    const auto pState=std::make_shared<gl_state>();
+    webgl1es2_scene scene(pState);
+    const auto pMaterial=a_material(material::render_mode::additive);
+    const auto pCamera=a_camera();
+    std::vector<std::shared_ptr<webgl1es2_entity>> entities;
+    for (int at=0; at<12; ++at) {
+        entities.push_back(an_entity(pMaterial,{0,0,-5.0f-static_cast<float>(at)}));
+        scene.add(entities.back());
+    }
+    scene.add(pCamera);
+    scene.draw(FRAME_BUFFER_SIZE);
+    const auto first=pState->taken();
+    REQUIRE(first.draws==12); REQUIRE(first.materials==1);
+    pMaterial->set_vector4("_Color",vector4_type{0.25f,0.5f,0.75f,1});
+    scene.draw(FRAME_BUFFER_SIZE);
+    const auto next=pState->taken();
+    REQUIRE(next.draws==12); REQUIRE(next.materials==1);
+    GLfloat color[4]{};
+    const auto shader=pMaterial->getShaderProgram();
+    glGetUniformfv(shader->handle(),glGetUniformLocation(shader->handle(),"_Color"),color);
+    REQUIRE(color[0]==Approx(0.25f)); REQUIRE(color[2]==Approx(0.75f));
+}
+
 TEST_CASE("gdk::webgl1es2_scene entity membership", "[gdk::webgl1es2_scene]")
 {
     initGL();

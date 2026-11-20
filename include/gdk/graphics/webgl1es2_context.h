@@ -38,6 +38,7 @@ namespace gdk::graphics {
         struct counts final {
             std::size_t draws = 0;    //!< draw calls
             std::size_t programs = 0; //!< changes of shader program
+            std::size_t materials = 0; //!< material activations, including texture and uniform uploads
         };
 
         //! what has been drawn since the last time this was asked

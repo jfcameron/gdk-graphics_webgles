@@ -118,7 +118,7 @@ webgl1es2_context::~webgl1es2_context() = default;
 webgl1es2_context::counts webgl1es2_context::take_counts() {
     const auto taken = m_pState->taken();
 
-    return {taken.draws, taken.programs};
+    return {taken.draws, taken.programs, taken.materials};
 }
 
 screen_camera_ptr_type webgl1es2_context::make_camera() {

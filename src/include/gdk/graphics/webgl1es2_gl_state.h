@@ -70,9 +70,11 @@ namespace gdk::graphics {
         struct counted final {
             std::size_t draws = 0;
             std::size_t programs = 0;
+            std::size_t materials = 0;
         };
 
         void count_draw() { ++mCounted.draws; }
+        void count_material() { ++mCounted.materials; }
 
         [[nodiscard]] counted taken() { const auto out = mCounted; mCounted = {}; return out; }
 
