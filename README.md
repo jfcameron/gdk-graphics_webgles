@@ -31,6 +31,22 @@ Beyond the interface, the context offers:
 - `update_from`, in the browser, which draws a VideoFrame, an image or a canvas into a texture on the GPU;
 - `adopt`, where GL's context is EGL's, which samples an EGLImage, a hardware decoder's frame say, in place.
 
+### Volume textures
+ES 2 and WebGL 1 have no 3D textures, so a `volume_texture` is packed into a square 2D texture, its bytes in order: a cube whose edge L is a perfect square (4, 9, 16, 25...) packs into a texture L times sqrt(L) across, 64 for an edge of 16. Anything else is refused, as is a packed texture past the device's or the profile's largest. Every shader is given `gdk_volume`, which reads one at a position 0 to 1 on each axis, wrapped and filtered as it was made, from the uniforms its material sets for it where the shader declares them:
+
+```glsl
+uniform sampler2D _Light;
+uniform mediump float _Light_Size;   // the edge
+uniform mediump vec3 _Light_Wrap;    // each axis: 0 clamped, 1 repeat, 2 mirrored
+uniform mediump float _Light_Smooth; // 1 where it blends the eight voxels around the position
+
+varying highp vec3 v_Position;
+
+void main() { gl_FragColor = gdk_volume(_Light, _Light_Size, _Light_Wrap, _Light_Smooth, v_Position); }
+```
+
+`gdk_texture3D(volume, size, vec2(0.5), index)` reads a voxel by its integer index, clamped, and `gdk_texture3D_trilinear` blends at a position in voxels. Smooth reads are eight texture reads, so cost eight times a sharp one. The voxel demo reads its blocks and its light this way.
+
 ### Skinning
 A skinned mesh is posed in its vertex shader (`ext/webgl1es2_skinning.h`, namespace `gdk::graphics::ext`), linked as `gdk::graphics_webgles_skinning`, which needs no GL. `es2_skinning(bones)` is GLSL ES 1.00 for the start of one: the attributes `a_Joints` (a vertex's two bones) and `a_Weight` (how much the first moves it), the uniform array `_Bones` (each bone's matrix as its top three rows, so three vec4s a bone), and `skinning()`, the vertex's matrix:
 

@@ -29,6 +29,7 @@ if (TARGET gdkwindowing_glfw)
             "${CMAKE_CURRENT_LIST_DIR}/ext/skinned_draw_test.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/texture3d_test.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/texture_test.cpp"
+            "${CMAKE_CURRENT_LIST_DIR}/volume_texture_test.cpp"
             "${CMAKE_CURRENT_LIST_DIR}/webgles_conformance.cpp"
 
         INCLUDE_DIRECTORIES

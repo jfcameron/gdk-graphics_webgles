@@ -272,7 +272,7 @@ public:
 
     static constexpr size_t CHANNELS_PER_COLOR = 2;
     using texture_data_type = std::array<gdk::graphics::texture_data::channel_type, size_1d * CHANNELS_PER_COLOR>;
-    using texture_data_view_pair = std::pair<gdk::graphics::texture_data::view, std::shared_ptr<texture_data_type>>;
+    using texture_data_view_pair = std::pair<gdk::graphics::texture_data::volume_view, std::shared_ptr<texture_data_type>>;
 
 private:
     demo::cube_array<blockType, size> m_Data;
@@ -306,9 +306,10 @@ public:
 
         auto pTextureData = std::make_shared<texture_data_type>(std::move(textureData));
 
-        texture_data::view view;
-        view.width = size_2d;
-        view.height = size_2d;
+        texture_data::volume_view view;
+        view.width = size;
+        view.height = size;
+        view.depth = size;
         view.format = texture::format::rg;
         view.data = &(pTextureData->front());
 
@@ -393,13 +394,10 @@ int main() {
         return p;
     }();
 
-    texture_data::view view;
-    view.width = 0;
-    view.height = 0;
-    view.format = texture::format::rgba;
-    view.data = {};
-    auto pLightingTexture = pGraphics->make_texture(view, texture::wrap_mode::clamped, texture::wrap_mode::clamped);
-    auto pBlockTypeVolumeTexture = pGraphics->make_texture(view, texture::wrap_mode::clamped, texture::wrap_mode::clamped);
+    auto pLightingTexture = pGraphics->make_volume_texture(lighting.to_texture_data().first,
+        volume_texture::wrap_mode::clamped, volume_texture::wrap_mode::clamped, volume_texture::wrap_mode::clamped);
+    auto pBlockTypeVolumeTexture = pGraphics->make_volume_texture(blockData.to_texture_data().first,
+        volume_texture::wrap_mode::clamped, volume_texture::wrap_mode::clamped, volume_texture::wrap_mode::clamped);
 
     texture_data::view blockUVTextureView;
     blockUVTextureView.width = 64;
@@ -441,8 +439,9 @@ int main() {
         )V0G0N");
 
         const std::string fragmentShaderSource(R"V0G0N(
-        // must be mediump. lowp is only guaranteed a range of +/-2, and this holds 16
-        uniform mediump float _VolumetricTextureSize;
+        // must be mediump. lowp is only guaranteed a range of +/-2, and these hold 16
+        uniform mediump float _BlockTypeVolumetricTexture_Size;
+        uniform mediump float _LightingVolumetricTexture_Size;
         uniform sampler2D _BlockTypeToUVMappingTexture;
         uniform sampler2D _BlockTypeVolumetricTexture;
         uniform sampler2D _LightingVolumetricTexture;
@@ -467,15 +466,15 @@ int main() {
             uv = clamp(uv, 0.1, 0.9); //hiding UV seams
             uv *= _NormalizedTileSize;
 
-            vec2 texColor = gdk_texture3D(_BlockTypeVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), blockPosition).ra;
-            int lowByte = int(texColor.x * 255.);
-            int highByte = int(texColor.y * 255.);
+            vec2 texColor = gdk_texture3D(_BlockTypeVolumetricTexture, _BlockTypeVolumetricTexture_Size, vec2(0.5, 0.5), blockPosition).ra;
+            int lowByte = int(floor(texColor.x * 255. + 0.5));
+            int highByte = int(floor(texColor.y * 255. + 0.5));
             int blockType = highByte * 256 + lowByte;
 
             // TODO: turn this into a gdk_ function. indexes a 2d texture as though tis 1d. gdk_texture1D? seems generally useful
             float texWidth = _BlockTypeToUVMappingTextureSize;  
             float texHeight = _BlockTypeToUVMappingTextureSize; 
-            int lookupIndex = blockType * 6 + int(v_BlockDirection);
+            int lookupIndex = blockType * 6 + int(floor(v_BlockDirection + 0.5));
             float xIndex = mod(float(lookupIndex), texWidth);
             float yIndex = floor(float(lookupIndex) / texWidth);
             vec2 texCoord = vec2((xIndex + 0.5) / texWidth, (yIndex + 0.5) / texHeight);
@@ -485,14 +484,14 @@ int main() {
             vec4 texel = texture2D(_TilesetTexture, uv);
 
             //TODO: prevent sample wrapping 
-            lowp vec3 l000 = gdk_texture3D(_LightingVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), positionInVolumetricData).xyz;
-            lowp vec3 l100 = gdk_texture3D(_LightingVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), positionInVolumetricData + ivec3(1,0,0)).xyz;
-            lowp vec3 l010 = gdk_texture3D(_LightingVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), positionInVolumetricData + ivec3(0,1,0)).xyz;
-            lowp vec3 l110 = gdk_texture3D(_LightingVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), positionInVolumetricData + ivec3(1,1,0)).xyz;
-            lowp vec3 l001 = gdk_texture3D(_LightingVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), positionInVolumetricData + ivec3(0,0,1)).xyz;
-            lowp vec3 l101 = gdk_texture3D(_LightingVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), positionInVolumetricData + ivec3(1,0,1)).xyz;
-            lowp vec3 l011 = gdk_texture3D(_LightingVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), positionInVolumetricData + ivec3(0,1,1)).xyz;
-            lowp vec3 l111 = gdk_texture3D(_LightingVolumetricTexture, _VolumetricTextureSize, vec2(0.5, 0.5), positionInVolumetricData + ivec3(1,1,1)).xyz;
+            lowp vec3 l000 = gdk_texture3D(_LightingVolumetricTexture, _LightingVolumetricTexture_Size, vec2(0.5, 0.5), positionInVolumetricData).xyz;
+            lowp vec3 l100 = gdk_texture3D(_LightingVolumetricTexture, _LightingVolumetricTexture_Size, vec2(0.5, 0.5), positionInVolumetricData + ivec3(1,0,0)).xyz;
+            lowp vec3 l010 = gdk_texture3D(_LightingVolumetricTexture, _LightingVolumetricTexture_Size, vec2(0.5, 0.5), positionInVolumetricData + ivec3(0,1,0)).xyz;
+            lowp vec3 l110 = gdk_texture3D(_LightingVolumetricTexture, _LightingVolumetricTexture_Size, vec2(0.5, 0.5), positionInVolumetricData + ivec3(1,1,0)).xyz;
+            lowp vec3 l001 = gdk_texture3D(_LightingVolumetricTexture, _LightingVolumetricTexture_Size, vec2(0.5, 0.5), positionInVolumetricData + ivec3(0,0,1)).xyz;
+            lowp vec3 l101 = gdk_texture3D(_LightingVolumetricTexture, _LightingVolumetricTexture_Size, vec2(0.5, 0.5), positionInVolumetricData + ivec3(1,0,1)).xyz;
+            lowp vec3 l011 = gdk_texture3D(_LightingVolumetricTexture, _LightingVolumetricTexture_Size, vec2(0.5, 0.5), positionInVolumetricData + ivec3(0,1,1)).xyz;
+            lowp vec3 l111 = gdk_texture3D(_LightingVolumetricTexture, _LightingVolumetricTexture_Size, vec2(0.5, 0.5), positionInVolumetricData + ivec3(1,1,1)).xyz;
 
             // TODO: refactor into gdk_texture3D_trilinear?
             // interpolation has to be done manually since GLES2 does not support 3d textures and i got around that by packing the
@@ -527,10 +526,9 @@ int main() {
         );
         pMaterial->set_float("_BlockTypeToUVMappingTextureSize", 64.);
         pMaterial->set_float("_NormalizedTileSize", 0.5);
-        pMaterial->set_float("_VolumetricTextureSize", 16.);
         pMaterial->set_texture("_BlockTypeToUVMappingTexture", pBlockTypeToUVTextureMap);
-        pMaterial->set_texture("_BlockTypeVolumetricTexture", pBlockTypeVolumeTexture);
-        pMaterial->set_texture("_LightingVolumetricTexture", pLightingTexture);
+        pMaterial->set_volume_texture("_BlockTypeVolumetricTexture", pBlockTypeVolumeTexture);
+        pMaterial->set_volume_texture("_LightingVolumetricTexture", pLightingTexture);
         pMaterial->set_texture("_TilesetTexture", pTexture);
         pMaterial->set_vector2("_UVOffset", {0, 0});
         pMaterial->set_vector2("_UVScale", {1, 1});

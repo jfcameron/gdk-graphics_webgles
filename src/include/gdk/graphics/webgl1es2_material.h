@@ -7,6 +7,7 @@
 #include <gdk/graphics/string_keyed.h>
 #include <gdk/graphics/material.h>
 #include <gdk/graphics/webgl1es2_shader_program.h>
+#include <gdk/graphics/webgl1es2_volume_texture.h>
 
 #include <array>
 #include <optional>
@@ -21,6 +22,10 @@ namespace gdk::graphics {
     ///@{
     //
         virtual void set_texture(const std::string_view aName, const texture_ptr_type aTexture) override;
+
+        /// \brief also sets, where the shader declares them, `<name>_Size` (a float, the edge), `<name>_Wrap` (a vec3,
+        /// each axis 0 clamped, 1 repeat, 2 mirrored) and `<name>_Smooth` (a float, 1 for smooth), for `gdk_volume`
+        virtual void set_volume_texture(const std::string_view aName, const volume_texture_ptr_type aVolume) override;
         
         virtual void set_float(const std::string_view aName, float aValue) override;
         virtual void set_vector2(const std::string_view aName, vector2_type aValue) override;
@@ -93,6 +98,8 @@ namespace gdk::graphics {
 
         //! texture data provided to the shader stages
         texture_uniform_collection_type m_Textures;
+
+        string_keyed<std::shared_ptr<webgl1es2_volume_texture>> m_VolumeTextures;
         
         /// \brief a value bound for the shader stages, with its location already resolved
         template<typename value_type>

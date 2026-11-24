@@ -83,6 +83,13 @@ void webgl1es2_material::activate(gl_state &aState) {
     upload(m_Vector4Arrays);
 
     for (const auto &[name, pTexture] : m_Textures) m_pShaderProgram->try_set_uniform(name, *pTexture, aState);
+
+    for (const auto &[name, pVolume] : m_VolumeTextures) {
+        m_pShaderProgram->try_set_uniform(name, pVolume->packed(), aState);
+        m_pShaderProgram->try_set_uniform(name + "_Size", static_cast<GLfloat>(pVolume->length()));
+        m_pShaderProgram->try_set_uniform(name + "_Wrap", pVolume->wrap());
+        m_pShaderProgram->try_set_uniform(name + "_Smooth", pVolume->smooth() ? 1.0f : 0.0f);
+    }
 }
 
 webgl1es2_material::shader_ptr_type webgl1es2_material::getShaderProgram() {
@@ -90,6 +97,8 @@ webgl1es2_material::shader_ptr_type webgl1es2_material::getShaderProgram() {
 }
 
 void webgl1es2_material::set_texture(const std::string_view aName, const texture_ptr_type aValue) {
+    if (const auto found = m_VolumeTextures.find(aName); found != m_VolumeTextures.end()) m_VolumeTextures.erase(found);
+
     if (!aValue) {
         if (const auto found = m_Textures.find(aName); found != m_Textures.end()) m_Textures.erase(found);
 
@@ -101,6 +110,24 @@ void webgl1es2_material::set_texture(const std::string_view aName, const texture
     if (!pTexture) throw exception("webgl1es2_material::set_texture: the texture was made by another kind of context");
 
     m_Textures[std::string(aName)] = std::move(pTexture);
+}
+
+void webgl1es2_material::set_volume_texture(const std::string_view aName, const volume_texture_ptr_type aValue) {
+    if (const auto found = m_Textures.find(aName); found != m_Textures.end()) m_Textures.erase(found);
+
+    if (!aValue) {
+        if (const auto found = m_VolumeTextures.find(aName); found != m_VolumeTextures.end())
+            m_VolumeTextures.erase(found);
+
+        return;
+    }
+
+    auto pVolume = std::dynamic_pointer_cast<webgl1es2_volume_texture>(aValue);
+
+    if (!pVolume)
+        throw exception("webgl1es2_material::set_volume_texture: the volume was made by another kind of context");
+
+    m_VolumeTextures[std::string(aName)] = std::move(pVolume);
 }
 
 void webgl1es2_material::set_float(const std::string_view aName, float aValue) {

@@ -117,6 +117,9 @@ static void perform_shader_code_preprocessing_done_to_both_vertex_and_fragment_s
     ///
     /// \brief gdk_texture3D_trilinear: the volume read between voxels, blended from the eight
     /// around a point
+    ///
+    /// \brief gdk_volume: a volume_texture read at a position 0 to 1 on each axis, wrapped and filtered as it was made,
+    /// given the `<name>_Size`, `<name>_Wrap` and `<name>_Smooth` its material sets
     aSource.insert(0, R"V0G0N(
         #ifdef GL_FRAGMENT_PRECISION_HIGH
         #define GDK_TEXTURE3D_PRECISION highp
@@ -161,6 +164,48 @@ static void perform_shader_code_preprocessing_done_to_both_vertex_and_fragment_s
                 gdk_texture3D(aSampler2D, L, centre, b + ivec3(1, 0, 1)), t.x);
             mediump vec4 x11 = mix(gdk_texture3D(aSampler2D, L, centre, b + ivec3(0, 1, 1)),
                 gdk_texture3D(aSampler2D, L, centre, b + ivec3(1, 1, 1)), t.x);
+
+            return mix(mix(x00, x10, t.y), mix(x01, x11, t.y), t.z);
+        }
+
+        GDK_TEXTURE3D_PRECISION vec3 gdk_volume_index(GDK_TEXTURE3D_PRECISION vec3 aIndex,
+            GDK_TEXTURE3D_PRECISION float aLength, GDK_TEXTURE3D_PRECISION vec3 aWrap) {
+            GDK_TEXTURE3D_PRECISION vec3 clamped = clamp(aIndex, 0.0, aLength - 1.0);
+            GDK_TEXTURE3D_PRECISION vec3 repeated = mod(aIndex, aLength);
+            GDK_TEXTURE3D_PRECISION vec3 twice = mod(aIndex, 2.0 * aLength);
+            GDK_TEXTURE3D_PRECISION vec3 mirrored = mix(twice, 2.0 * aLength - 1.0 - twice, step(aLength, twice));
+            GDK_TEXTURE3D_PRECISION vec3 chosen = mix(clamped, repeated, vec3(equal(aWrap, vec3(1.0))));
+
+            return mix(chosen, mirrored, vec3(equal(aWrap, vec3(2.0))));
+        }
+
+        mediump vec4 gdk_volume_texel(sampler2D aVolume, GDK_TEXTURE3D_PRECISION float aLength,
+            GDK_TEXTURE3D_PRECISION vec3 aWrap, GDK_TEXTURE3D_PRECISION vec3 aIndex) {
+            return gdk_texture3D(aVolume, aLength, vec2(0.5, 0.5), ivec3(gdk_volume_index(aIndex, aLength, aWrap)));
+        }
+
+        mediump vec4 gdk_volume(sampler2D aVolume, GDK_TEXTURE3D_PRECISION float aLength,
+            GDK_TEXTURE3D_PRECISION vec3 aWrap, GDK_TEXTURE3D_PRECISION float aSmooth,
+            GDK_TEXTURE3D_PRECISION vec3 aPosition) {
+            GDK_TEXTURE3D_PRECISION vec3 at = aPosition * aLength;
+
+            if (aSmooth < 0.5) {
+                return gdk_volume_texel(aVolume, aLength, aWrap, floor(at));
+            }
+
+            GDK_TEXTURE3D_PRECISION vec3 between = at - 0.5;
+            GDK_TEXTURE3D_PRECISION vec3 b = floor(between);
+            GDK_TEXTURE3D_PRECISION vec3 t = between - b;
+            GDK_TEXTURE3D_PRECISION float L = aLength;
+
+            mediump vec4 x00 = mix(gdk_volume_texel(aVolume, L, aWrap, b),
+                gdk_volume_texel(aVolume, L, aWrap, b + vec3(1.0, 0.0, 0.0)), t.x);
+            mediump vec4 x10 = mix(gdk_volume_texel(aVolume, L, aWrap, b + vec3(0.0, 1.0, 0.0)),
+                gdk_volume_texel(aVolume, L, aWrap, b + vec3(1.0, 1.0, 0.0)), t.x);
+            mediump vec4 x01 = mix(gdk_volume_texel(aVolume, L, aWrap, b + vec3(0.0, 0.0, 1.0)),
+                gdk_volume_texel(aVolume, L, aWrap, b + vec3(1.0, 0.0, 1.0)), t.x);
+            mediump vec4 x11 = mix(gdk_volume_texel(aVolume, L, aWrap, b + vec3(0.0, 1.0, 1.0)),
+                gdk_volume_texel(aVolume, L, aWrap, b + vec3(1.0, 1.0, 1.0)), t.x);
 
             return mix(mix(x00, x10, t.y), mix(x01, x11, t.y), t.z);
         }

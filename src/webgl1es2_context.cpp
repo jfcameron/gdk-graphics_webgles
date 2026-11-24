@@ -16,6 +16,7 @@
 #include <gdk/graphics/webgl1es2_shader_program.h>
 #include <gdk/graphics/webgl1es2_texture.h>
 #include <gdk/graphics/webgl1es2_texture_camera.h>
+#include <gdk/graphics/webgl1es2_volume_texture.h>
 
 #include <cstring>
 #include <string>
@@ -226,6 +227,13 @@ texture_ptr_type webgl1es2_context::make_texture(const texture_data::view &aText
     pTexture->hold_to(m_pProfile);
 
     return pTexture;
+}
+
+volume_texture_ptr_type webgl1es2_context::make_volume_texture(const texture_data::volume_view &aVolumeData,
+    const volume_texture::wrap_mode aWrapModeU, const volume_texture::wrap_mode aWrapModeV,
+    const volume_texture::wrap_mode aWrapModeW, const volume_texture::filter_mode aFilterMode) {
+    return std::make_shared<webgl1es2_volume_texture>(aVolumeData, aWrapModeU, aWrapModeV, aWrapModeW, aFilterMode,
+        m_pProfile);
 }
 
 texture_ptr_type webgl1es2_context::make_texture() {

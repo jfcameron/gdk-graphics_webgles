@@ -28,7 +28,7 @@ namespace gdk::graphics {
         static constexpr size_t CHANNELS_PER_COLOR = 3;
 
         using texture_data_type = std::array<gdk::graphics::texture_data::channel_type, size_1d * CHANNELS_PER_COLOR>;
-        using texture_data_view_pair = std::pair<gdk::graphics::texture_data::view, std::shared_ptr<texture_data_type>>;
+        using texture_data_view_pair = std::pair<gdk::graphics::texture_data::volume_view, std::shared_ptr<texture_data_type>>;
         using local_space_component_type = int;
 
     private:
@@ -94,9 +94,10 @@ namespace gdk::graphics {
 
             auto pTextureData = std::make_shared<texture_data_type>(std::move(textureData));
 
-            texture_data::view view;
-            view.width = size_2d;
-            view.height = size_2d;
+            texture_data::volume_view view;
+            view.width = size;
+            view.height = size;
+            view.depth = size;
             view.format = texture_data::format::rgb;
             view.data = &(pTextureData->front());
 

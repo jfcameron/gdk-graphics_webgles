@@ -95,6 +95,7 @@ add_library(gdkgraphics_webgles STATIC
     "${CMAKE_CURRENT_SOURCE_DIR}/src/webgl1es2_screen_camera.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/webgl1es2_shader_program.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/webgl1es2_texture.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/webgl1es2_volume_texture.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/webgl1es2_texture_camera.cpp")
 
 add_library(gdk::graphics_webgles ALIAS gdkgraphics_webgles)

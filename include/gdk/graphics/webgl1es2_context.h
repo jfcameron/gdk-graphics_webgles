@@ -29,6 +29,7 @@ namespace gdk::graphics {
 
         using graphics::context::make_material;
         using graphics::context::make_texture;
+        using graphics::context::make_volume_texture;
 
         /// \brief a shader program from GLSL ES 1.00 source, checked against the context's profile
         /// \throws gdk::graphics::exception past the profile, or when the program does not compile and link
@@ -104,6 +105,14 @@ namespace gdk::graphics {
             const texture::filter_mode aFilterMode) override;
 
         [[nodiscard]] virtual texture_ptr_type make_texture() override;
+
+        /// \brief a volume packed into a square 2D texture, which shaders read with `gdk_volume`
+        /// \throws gdk::graphics::exception for a volume that is not a cube, an edge that is not a perfect square (4, 9,
+        /// 16, 25...), or a packed texture past the device's or the profile's largest: an edge L packs L times sqrt(L)
+        /// across
+        [[nodiscard]] virtual volume_texture_ptr_type make_volume_texture(const texture_data::volume_view &aVolumeData,
+            const volume_texture::wrap_mode aWrapModeU, const volume_texture::wrap_mode aWrapModeV,
+            const volume_texture::wrap_mode aWrapModeW, const volume_texture::filter_mode aFilterMode) override;
 
         [[nodiscard]] virtual shader_ptr_type make_alpha_cutoff_shader() const override;
 
